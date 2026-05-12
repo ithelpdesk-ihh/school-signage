@@ -96,16 +96,7 @@ async function refreshSignage() {
             }, 10000);
         }
 
-        // 4. Update Video (YOUTUBE LOGIC INSERTED HERE)
-        if (data.videoId) {
-            const playerEl = document.getElementById('yt-player');
-            const videoUrl = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`; 
 
-            // Only update src if ID changed to avoid flickering
-            if (!playerEl.src.includes(data.videoId)) {
-                playerEl.src = videoUrl;
-            }
-        }
 
         // 5. Bulletin
         document.getElementById('marquee-text').innerText = data.bulletin || "Welcome to Invictus";
