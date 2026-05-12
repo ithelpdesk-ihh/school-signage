@@ -235,47 +235,6 @@ async function refreshSignage() {
         }
 
         // -------------------------
-        // VIDEO (GOOGLE DRIVE)
-      if (data.videos && data.videos.length > 0) {
-
-    const video = document.getElementById("video-player");
-
-    function loadVideo(id) {
-
-    const video = document.getElementById("video-player");
-
-    // reset old video
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
-
-    // OPTION 2 STREAM LINK
-    video.src =
-      `https://docs.google.com/uc?export=download&id=${id}`;
-
-    video.play().catch(err => {
-        console.log("Autoplay issue:", err);
-    });
-}
-
-    // Start first video
-    loadVideo(currentVideo);
-
-    // Clear old interval
-    if (videoInterval) clearInterval(videoInterval);
-
-    // Rotate videos
-    videoInterval = setInterval(() => {
-
-        currentVideo =
-          (currentVideo + 1) % data.videos.length;
-
-        loadVideo(currentVideo);
-
-    }, 60000);
-}
-
-        // -------------------------
         // TEXT CONTENT
         // -------------------------
         document.getElementById("campus-updates").querySelector(".content").innerHTML =
