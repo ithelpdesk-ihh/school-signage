@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invictus Live Drive Signage</title>
-    <link href="https://googleapis.com" rel="stylesheet">
+    <title>Invictus Live Signage</title>
     <style>
         :root { --navy: #0f172a; --gold: #f59e0b; --accent: #334155; --text-light: #f8fafc; --bg-dark: #020617; }
-        body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; background-color: var(--bg-dark); color: var(--text-light); font-family: 'Inter', sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; background-color: var(--bg-dark); color: var(--text-light); font-family: sans-serif; }
         header { height: 18vh; background: var(--navy); display: flex; justify-content: space-between; align-items: center; padding: 0 50px; border-bottom: 6px solid var(--gold); box-sizing: border-box; }
-        .school-name { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1.1; }
-        .clock-container { text-align: right; min-width: 450px; }
+        .school-name { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; }
         #time { font-size: 7rem; font-weight: 800; line-height: 1; }
         #date { color: var(--gold); font-size: 2rem; font-weight: 700; text-transform: uppercase; }
         main { height: 74vh; display: grid; grid-template-columns: 1fr 1.3fr; gap: 20px; padding: 20px; box-sizing: border-box; }
@@ -19,11 +17,9 @@
         .video-box { flex: 4; background: #000; }
         .bottom-split { flex: 1.2; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .info-panel { padding: 18px 25px; background: #ffffff; color: #1e293b; height: 100%; box-sizing: border-box; }
-        .info-panel h2 { margin: 0 0 10px; font-size: 1.3rem; color: var(--navy); display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #f1f5f9; padding-bottom: 5px; }
-        .info-panel h2::before { content: ""; width: 6px; height: 22px; background: var(--gold); border-radius: 3px; }
-        .notice-item { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; color: #1e293b; }
+        .info-panel h2 { margin: 0 0 10px; font-size: 1.3rem; color: var(--navy); border-bottom: 2px solid #f1f5f9; }
         #news-bar { height: 8vh; background: var(--gold); color: #000; display: flex; align-items: center; }
-        .ticker-label { background: var(--navy); color: #fff; padding: 0 30px; height: 100%; display: flex; align-items: center; font-size: 1.4rem; font-weight: 900; z-index: 20; }
+        .ticker-label { background: var(--navy); color: #fff; padding: 0 30px; height: 100%; display: flex; align-items: center; font-size: 1.4rem; font-weight: 900; }
         .marquee-container { flex: 1; overflow: hidden; }
         .marquee { white-space: nowrap; font-size: 2.5rem; font-weight: 800; display: inline-block; padding-left: 100%; animation: scroll 35s linear infinite; line-height: 8vh; }
         @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
@@ -33,109 +29,65 @@
 <body>
     <header>
         <div class="school-name">Invictus International School<br><span style="color: var(--gold); font-size: 3rem;">Horizon Hills</span></div>
-        <div class="clock-container">
-            <div id="time">00:00:00</div>
-            <div id="date">LOADING...</div>
-        </div>
+        <div class="clock-container"><div id="time">00:00:00</div><div id="date">LOADING...</div></div>
     </header>
-
     <main>
-        <div class="card poster-box">
-            <img id="slideshow" src="https://placeholder.com...">
-        </div>
+        <div class="card"><img id="slideshow" src=""></div>
         <div class="right-col">
-            <div class="card video-box">
-                <!-- ID is yt-player, SRC will be filled by Javascript -->
-                <iframe id="yt-player" src=""></iframe>
-            </div>
+            <div class="card video-box"><iframe id="yt-player" src=""></iframe></div>
             <div class="bottom-split">
-                <div class="card info-panel" id="campus-updates">
-                    <h2>CAMPUS UPDATES</h2>
-                    <div class="content">Loading updates...</div>
-                </div>
-                <div class="card info-panel" style="background: var(--navy); color: white;">
-                    <h2 style="color: var(--gold);">STUDENT HIGHLIGHTS</h2>
-                    <div class="content" id="student-highlights">Loading...</div>
-                </div>
+                <div class="card info-panel" id="campus-updates"><h2>CAMPUS UPDATES</h2><div class="content">Loading...</div></div>
+                <div class="card info-panel" style="background: var(--navy); color: white;"><h2 style="color: var(--gold);">STUDENT HIGHLIGHTS</h2><div class="content">Loading...</div></div>
             </div>
         </div>
     </main>
-
     <div id="news-bar">
         <div class="ticker-label">BULLETIN</div>
-        <div class="marquee-container">
-            <div id="marquee-text" class="marquee">Initializing systems...</div>
-        </div>
+        <div class="marquee-container"><div id="marquee-text" class="marquee">Initializing...</div></div>
     </div>
 
 <script>
-    // FIXED: No extra slashes, and correctly pointing to ://google.com
-const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
-
-
+    const API_URL = "https://google.com";
     let slideshowInterval;
 
     async function refreshSignage() {
-        console.log("Attempting to connect to Google Drive...");
         try {
-            // Added ?t= to force refresh data and skip old cache
             const response = await fetch(API_URL + "?t=" + Date.now());
-            
-            if (!response.ok) throw new Error("Google Script not responding");
-            
             const data = await response.json();
-            console.log("Success! Data received:", data);
 
-            // 1. UPDATE IMAGES (SLIDESHOW)
-            if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+            // 1. Slideshow
+            if (data.images?.length > 0) {
                 const imgEl = document.getElementById('slideshow');
-                let imgIdx = 0;
+                let idx = 0;
                 imgEl.src = data.images[0];
-                
                 if(slideshowInterval) clearInterval(slideshowInterval);
                 slideshowInterval = setInterval(() => {
-                    imgIdx = (imgIdx + 1) % data.images.length;
-                    imgEl.src = data.images[imgIdx];
-                }, 15000); 
+                    idx = (idx + 1) % data.images.length;
+                    imgEl.src = data.images[idx];
+                }, 10000);
             }
 
-            // 2. UPDATE CAMPUS UPDATES (NOTICES)
-            const campusBox = document.querySelector('#campus-updates .content');
-            if (data.notices && Array.isArray(data.notices)) {
-                campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
-            } else {
-                campusBox.innerHTML = "No notices found.";
-            }
+            // 2. Notices
+            document.querySelector('#campus-updates .content').innerHTML = data.notices.map(n => `<div>▶ ${n}</div>`).join('');
+            
+            // 3. Bulletin
+            document.getElementById('marquee-text').innerText = data.bulletin;
 
-            // 3. UPDATE BULLETIN (MARQUEE)
-            const bulletinText = data.bulletin || "Welcome back to Invictus International School";
-            document.getElementById('marquee-text').innerText = bulletinText;
-
-            // 4. UPDATE VIDEO (FIXED EMBED FORMAT)
+            // 4. Video (Fixed Embed URL)
             if (data.videoId) {
-                const videoUrl = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
-                document.getElementById('yt-player').src = videoUrl;
+                document.getElementById('yt-player').src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
             }
-
-        } catch (e) { 
-            console.error("JavaScript Error during Sync:", e.message);
-            // Display exact error in marquee to help you debug on the TV
-            document.getElementById('marquee-text').innerText = "Sync Error: " + e.message;
-        }
+        } catch (e) { document.getElementById('marquee-text').innerText = "Connection Error: " + e.message; }
     }
 
     function runClock() {
         const now = new Date();
-        document.getElementById('time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        document.getElementById('date').innerText = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+        document.getElementById('time').innerText = now.toLocaleTimeString();
+        document.getElementById('date').innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
     }
 
-    runClock();
-    setInterval(runClock, 1000);
-    refreshSignage();
-    setInterval(refreshSignage, 300000); 
+    runClock(); setInterval(runClock, 1000);
+    refreshSignage(); setInterval(refreshSignage, 300000);
 </script>
-
-
 </body>
 </html>
