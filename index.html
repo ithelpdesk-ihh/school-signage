@@ -47,46 +47,60 @@
     </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
+    const API_URL = "https://google.com";
     let slideshowInterval;
 
-async function refreshSignage() {
-    try {
-        // Use a simple fetch that Google doesn't block
-        const response = await fetch(API_URL, {
-            method: 'GET',
-            mode: 'cors', // Crucial for cross-domain requests
-            cache: 'no-cache'
-        });
+    async function refreshSignage() {
+        try {
+            console.log("Fetching latest data...");
+            const response = await fetch(API_URL, {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-cache'
+            });
 
-        if (!response.ok) throw new Error("Server response failed");
-        
-        const data = await response.json();
+            if (!response.ok) throw new Error("Server response failed");
+            
+            const data = await response.json();
 
-        // 1. Update Notices
-        const campusBox = document.querySelector('#campus-updates .content');
-        campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
+            // 1. Update Campus Updates (Notices)
+            const campusBox = document.querySelector('#campus-updates .content');
+            if (data.notices) {
+                campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
+            }
 
-        // 2. Update Bulletin
-        document.getElementById('marquee-text').innerText = data.bulletin;
+            // 2. Update Student Highlights (NEW)
+            const highlightsBox = document.querySelector('#student-highlights');
+            if (data.highlights) {
+                highlightsBox.innerHTML = data.highlights.map(h => `<div style="margin-bottom:10px;">★ ${h}</div>`).join('');
+            }
 
-        // 3. Slideshow Logic
-        if (data.images?.length > 0) {
-            const imgEl = document.getElementById('slideshow');
-            let idx = 0;
-            imgEl.src = data.images[0];
-            if(slideshowInterval) clearInterval(slideshowInterval);
-            slideshowInterval = setInterval(() => {
-                idx = (idx + 1) % data.images.length;
-                imgEl.src = data.images[idx];
-            }, 15000);
+            // 3. Update Bulletin (Marquee)
+            document.getElementById('marquee-text').innerText = data.bulletin || "Welcome to Invictus International School";
+
+            // 4. Slideshow Logic
+            if (data.images && data.images.length > 0) {
+                const imgEl = document.getElementById('slideshow');
+                let idx = 0;
+                imgEl.src = data.images[0]; // Set first image immediately
+                
+                if(slideshowInterval) clearInterval(slideshowInterval);
+                slideshowInterval = setInterval(() => {
+                    idx = (idx + 1) % data.images.length;
+                    imgEl.src = data.images[idx];
+                }, 15000);
+            }
+
+            // 5. Update Video
+            if (data.videoId) {
+                document.getElementById('yt-player').src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
+            }
+
+        } catch (e) { 
+            document.getElementById('marquee-text').innerText = "Sync Error: " + e.message;
+            console.error("Fetch Error:", e);
         }
-    } catch (e) { 
-        document.getElementById('marquee-text').innerText = "Sync Error: " + e.message;
-        console.error("Fetch Error:", e);
     }
-}
-
 
     function runClock() {
         const now = new Date();
@@ -94,8 +108,12 @@ async function refreshSignage() {
         document.getElementById('date').innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
     }
 
-    runClock(); setInterval(runClock, 1000);
-    refreshSignage(); setInterval(refreshSignage, 300000);
+    runClock(); 
+    setInterval(runClock, 1000);
+    refreshSignage(); 
+    setInterval(refreshSignage, 300000); // Refresh every 5 minutes
 </script>
+
+    
 </body>
 </html>
