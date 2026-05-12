@@ -28,13 +28,9 @@
         .marquee { white-space: nowrap; font-size: 2.5rem; font-weight: 800; display: inline-block; padding-left: 100%; animation: scroll 35s linear infinite; line-height: 8vh; }
         @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
         iframe, img { width: 100%; height: 100%; border: none; object-fit: cover; }
-        .refresh-btn { position: fixed; bottom: 0; right: 0; width: 50px; height: 50px; opacity: 0; z-index: 999; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div class="refresh-btn" onclick="location.reload(true)"></div>
-
     <header>
         <div class="school-name">Invictus International School<br><span style="color: var(--gold); font-size: 3rem;">Horizon Hills</span></div>
         <div class="clock-container">
@@ -47,21 +43,19 @@
         <div class="card poster-box">
             <img id="slideshow" src="https://placeholder.com...">
         </div>
-
         <div class="right-col">
             <div class="card video-box">
-                <!-- FIXED: Using Embed URL to avoid the "Refused to Display" error -->
-                <iframe id="yt-player" src="https://youtube.com"></iframe>
+                <!-- ID is yt-player, SRC will be filled by Javascript -->
+                <iframe id="yt-player" src=""></iframe>
             </div>
-            
             <div class="bottom-split">
                 <div class="card info-panel" id="campus-updates">
                     <h2>CAMPUS UPDATES</h2>
                     <div class="content">Loading updates...</div>
                 </div>
-                <div class="card info-panel" id="student-highlights" style="background: var(--navy); color: white;">
+                <div class="card info-panel" style="background: var(--navy); color: white;">
                     <h2 style="color: var(--gold);">STUDENT HIGHLIGHTS</h2>
-                    <div class="content">Loading highlights...</div>
+                    <div class="content" id="student-highlights">Loading...</div>
                 </div>
             </div>
         </div>
@@ -79,15 +73,11 @@
     let slideshowInterval;
 
     async function refreshSignage() {
-        console.log("Attempting to fetch data...");
         try {
-            const response = await fetch(API_URL + "?t=" + Date.now(), { redirect: "follow" });
-            if (!response.ok) throw new Error('Google Script not responding');
-            
+            const response = await fetch(API_URL + "?t=" + Date.now());
             const data = await response.json();
-            console.log("Success! Data received:", data);
 
-            // 1. IMAGES
+            // 1. Images Slideshow
             if (data.images && data.images.length > 0) {
                 const imgEl = document.getElementById('slideshow');
                 let imgIdx = 0;
@@ -99,21 +89,21 @@
                 }, 15000); 
             }
 
-            // 2. NOTICES
-            const campusBox = document.querySelector('#campus-updates .content');
-            if (data.notices && data.notices.length > 0) {
-                campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
-            }
+            // 2. Notices
+            document.querySelector('#campus-updates .content').innerHTML = 
+                data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
 
-            // 3. BULLETIN
-            if (data.bulletin) {
-                document.getElementById('marquee-text').innerText = data.bulletin;
+            // 3. Bulletin
+            document.getElementById('marquee-text').innerText = data.bulletin;
+
+            // 4. Video (YouTube ID from Sheet)
+            if (data.videoId) {
+                document.getElementById('yt-player').src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
             }
 
         } catch (e) { 
             console.error("Connection Failed:", e);
             document.getElementById('marquee-text').innerText = "Connecting to Google Drive...";
-            setTimeout(refreshSignage, 10000); // Retry sooner on failure
         }
     }
 
