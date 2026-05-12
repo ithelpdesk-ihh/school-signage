@@ -44,9 +44,13 @@
 
     <div class="right-col">
         <!-- ✅ YOUTUBE PLAYER -->
-        <div class="card video-box">
-            <iframe id="yt-player" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
+    <div class="card video-box">
+        <iframe id="yt-player"
+        src=""
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+        </iframe>
+    </div>
 
         <div class="bottom-split">
             <div class="card info-panel" id="campus-updates" style="background: var(--gold); color: black;">
@@ -101,11 +105,13 @@ async function refreshSignage() {
 
         // ✅ YOUTUBE LOGIC
         if (data.videoId) {
-            const player = document.getElementById("yt-player");
-            `https://www.youtube.com/embed/${data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}&controls=0&rel=0`;
-            if (player.src !== videoUrl) {
-                player.src = videoUrl;
-            }
+
+        const player = document.getElementById("yt-player");
+
+        const url =
+        `https://www.youtube.com/embed/${data.videoId}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${data.videoId}`;
+
+        player.src = url;
         }
 
     } catch (e) {
