@@ -59,33 +59,26 @@
 
     async function refreshSignage() {
         try {
+            // Using 'cors' mode and 'follow' for redirects is required for Apps Script
             const response = await fetch(API_URL, {
                 method: 'GET',
                 mode: 'cors',
-                cache: 'no-cache'
+                redirect: 'follow'
             });
 
-            if (!response.ok) throw new Error("Server response failed");
-            
+            if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.json();
 
-            // 1. Campus Updates
-            const campusBox = document.querySelector('#campus-updates .content');
-            if (data.notices) {
-                campusBox.innerHTML = data.notices.map(n => `<div style="margin-bottom:5px;">▶ ${n}</div>`).join('');
-            }
+            // Populate data into boxes
+            document.getElementById('campus-updates').innerHTML = data.notices.map(n => `<div>▶ ${n}</div>`).join('');
+            document.getElementById('student-highlights').innerHTML = data.highlights.map(h => `<div>★ ${h}</div>`).join('');
+            document.getElementById('marquee-text').innerText = data.bulletin;
 
-            // 2. Student Highlights (NEW LOGIC)
-            const highlightBox = document.getElementById('student-highlights');
-            if (data.highlights) {
-                highlightBox.innerHTML = data.highlights.map(h => `<div style="margin-bottom:8px;">★ ${h}</div>`).join('');
-            }
+            // Update Video
+            document.getElementById('yt-player').src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
 
-            // 3. Bulletin
-            document.getElementById('marquee-text').innerText = data.bulletin || "Welcome back to Invictus";
-
-            // 4. Slideshow
-            if (data.images && data.images.length > 0) {
+            // Update Slideshow
+            if (data.images?.length > 0) {
                 const imgEl = document.getElementById('slideshow');
                 let idx = 0;
                 imgEl.src = data.images[0];
@@ -93,29 +86,29 @@
                 slideshowInterval = setInterval(() => {
                     idx = (idx + 1) % data.images.length;
                     imgEl.src = data.images[idx];
-                }, 15000);
+                }, 10000);
             }
-
-            // 5. Video
-            if (data.videoId) {
-                document.getElementById('yt-player').src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
-            }
-
-        } catch (e) { 
-            document.getElementById('marquee-text').innerText = "Sync Error: " + e.message;
+        } catch (e) {
+            console.error("Fetch Error:", e);
+            document.getElementById('marquee-text').innerText = "Sync Error: Check API URL";
         }
     }
 
     function runClock() {
-        const now = new Date();
-        document.getElementById('time').innerText = now.toLocaleTimeString();
-        document.getElementById('date').innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+        const timeEl = document.getElementById('time');
+        const dateEl = document.getElementById('date');
+        if (timeEl && dateEl) {
+            const now = new Date();
+            timeEl.innerText = now.toLocaleTimeString();
+            dateEl.innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+        }
     }
 
     runClock();
     setInterval(runClock, 1000);
     refreshSignage();
-    setInterval(refreshSignage, 300000); 
+    setInterval(refreshSignage, 300000); // 5 min refresh
 </script>
+
 </body>
 </html>
