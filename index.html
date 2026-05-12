@@ -1,298 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invictus Live Signage</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invictus Live Signage</title>
 
-    <style>
-        :root { --navy: #0f172a; --gold: #f59e0b; --accent: #334155; --text-light: #f8fafc; --bg-dark: #020617; }
+<style>
+:root {
+  --navy:#0f172a;
+  --gold:#f59e0b;
+  --accent:#334155;
+  --text:#f8fafc;
+  --bg:#020617;
+}
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            font-family: sans-serif;
-        }
+body,html{
+  margin:0;
+  padding:0;
+  height:100vh;
+  width:100vw;
+  overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:sans-serif;
+}
 
-        header {
-            height: 18vh;
-            background: var(--navy);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 50px;
-            border-bottom: 6px solid var(--gold);
-            box-sizing: border-box;
-        }
+header{
+  height:18vh;
+  background:var(--navy);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 40px;
+  border-bottom:6px solid var(--gold);
+}
 
-        .school-name {
-            font-size: 2.2rem;
-            font-weight: 900;
-            text-transform: uppercase;
-        }
+.school-name{
+  font-size:2.2rem;
+  font-weight:900;
+}
 
-        #time {
-            font-size: 7rem;
-            font-weight: 800;
-            line-height: 1;
-        }
+#time{
+  font-size:6rem;
+  font-weight:800;
+}
 
-        #date {
-            color: var(--gold);
-            font-size: 2rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+#date{
+  color:var(--gold);
+  font-size:1.8rem;
+}
 
-        main {
-            height: 74vh;
-            display: grid;
-            grid-template-columns: 1fr 1.3fr;
-            gap: 20px;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+main{
+  height:74vh;
+  display:grid;
+  grid-template-columns:1fr 1.3fr;
+  gap:20px;
+  padding:20px;
+}
 
-        .card {
-            background: var(--accent);
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+.card{
+  background:var(--accent);
+  border-radius:20px;
+  overflow:hidden;
+}
 
-        .right-col {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+.right{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
 
-        .video-box {
-            flex: 4;
-            background: #000;
-        }
+.video-box{
+  flex:4;
+  background:black;
+}
 
-        .bottom-split {
-            flex: 1.2;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+.bottom{
+  flex:1.2;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
 
-        .info-panel {
-            padding: 18px 25px;
-            background: #ffffff;
-            color: #1e293b;
-            height: 100%;
-            box-sizing: border-box;
-        }
+.info{
+  background:#fff;
+  color:#111;
+  padding:15px;
+}
 
-        .info-panel h2 {
-            margin: 0 0 10px;
-            font-size: 1.3rem;
-            color: var(--navy);
-            border-bottom: 2px solid #f1f5f9;
-        }
-
-        #news-bar {
-            height: 8vh;
-            background: var(--gold);
-            color: #000;
-            display: flex;
-            align-items: center;
-        }
-
-        .ticker-label {
-            background: var(--navy);
-            color: #fff;
-            padding: 0 30px;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            font-size: 1.4rem;
-            font-weight: 900;
-        }
-
-        .marquee-container {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .marquee {
-            white-space: nowrap;
-            font-size: 2.5rem;
-            font-weight: 800;
-            display: inline-block;
-            padding-left: 100%;
-            animation: scroll 35s linear infinite;
-            line-height: 8vh;
-        }
-
-        @keyframes scroll {
-            from { transform: translateX(0); }
-            to { transform: translateX(-100%); }
-        }
-
-        iframe, img, video {
-            width: 100%;
-            height: 100%;
-            border: none;
-            object-fit: cover;
-        }
-    </style>
+iframe,img,video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border:none;
+}
+</style>
 </head>
 
 <body>
 
 <header>
-    <div class="school-name">
-        Invictus International School<br>
-        <span style="color: var(--gold); font-size: 3rem;">Horizon Hills</span>
-    </div>
+  <div class="school-name">
+    Invictus International School<br>
+    <span style="color:var(--gold);font-size:2.5rem;">Horizon Hills</span>
+  </div>
 
-    <div class="clock-container">
-        <div id="time">00:00:00</div>
-        <div id="date">LOADING...</div>
-    </div>
+  <div>
+    <div id="time">00:00:00</div>
+    <div id="date">Loading...</div>
+  </div>
 </header>
 
 <main>
 
-    <div class="card poster-box">
-        <img id="slideshow" src="">
-    </div>
-
-    <div class="right-col">
-
-        <!-- ✅ GOOGLE DRIVE VIDEO PLAYER -->
-        <div class="card video-box">
-            <video id="video-player"
-                   autoplay
-                   muted
-                   playsinline></video>
-        </div>
-
-        <div class="bottom-split">
-
-            <div class="card info-panel" id="campus-updates" style="background: var(--gold); color: black;">
-                <h2>CAMPUS UPDATES</h2>
-                <div class="content">Loading updates...</div>
-            </div>
-
-            <div class="card info-panel" style="background: var(--navy); color: white;">
-                <h2 style="color: var(--gold);">STUDENT HIGHLIGHTS</h2>
-                <div id="student-highlights" class="content">Loading highlights...</div>
-            </div>
-
-        </div>
-    </div>
-</main>
-
-<div id="news-bar">
-    <div class="ticker-label">BULLETIN</div>
-    <div class="marquee-container">
-        <div id="marquee-text" class="marquee">Connecting to Google...</div>
-    </div>
+<!-- IMAGE -->
+<div class="card">
+  <img id="slideshow">
 </div>
+
+<!-- RIGHT SIDE -->
+<div class="right">
+
+  <!-- VIDEO -->
+  <div class="card video-box">
+    <video id="videoPlayer" autoplay muted playsinline preload="auto"></video>
+  </div>
+
+  <!-- INFO -->
+  <div class="bottom">
+
+    <div class="info" id="notices">
+      Loading notices...
+    </div>
+
+    <div class="info" id="highlights">
+      Loading highlights...
+    </div>
+
+  </div>
+
+</div>
+
+</main>
 
 <script>
 
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
+const API =
+  "YOUR_SCRIPT_URL_HERE";
 
-let slideshowInterval;
-let currentVideo = 0;
-let videoInterval;
+let slideIndex = 0;
+let videoIndex = 0;
+let slideTimer;
+let videoTimer;
 
-async function refreshSignage() {
-
-    try {
-
-        const res = await fetch(API_URL);
-        const data = await res.json();
-
-        // -------------------------
-        // SLIDESHOW
-        // -------------------------
-        if (data.images && data.images.length > 0) {
-
-            const img = document.getElementById("slideshow");
-            let i = 0;
-
-            img.src = data.images[0];
-
-            if (slideshowInterval) clearInterval(slideshowInterval);
-
-            slideshowInterval = setInterval(() => {
-                i = (i + 1) % data.images.length;
-                img.src = data.images[i];
-            }, 10000);
-        }
-
-        // -------------------------
-        // VIDEO (GOOGLE DRIVE)
-        // -------------------------
-        if (data.videos && data.videos.length > 0) {
-
-            const video = document.getElementById("video-player");
-
-            function loadVideo(index) {
-
-                const fileId = data.videos[index];
-
-                video.src =
-                  `https://drive.google.com/uc?export=download&id=${fileId}`;
-
-                video.play().catch(()=>{});
-            }
-
-            loadVideo(currentVideo);
-
-            if (videoInterval) clearInterval(videoInterval);
-
-            videoInterval = setInterval(() => {
-
-                currentVideo =
-                  (currentVideo + 1) % data.videos.length;
-
-                loadVideo(currentVideo);
-
-            }, 60000);
-        }
-
-        // -------------------------
-        // TEXT CONTENT
-        // -------------------------
-        document.getElementById("campus-updates").querySelector(".content").innerHTML =
-            (data.notices || []).map(n => `▶ ${n}`).join("<br>");
-
-        document.getElementById("student-highlights").innerHTML =
-            (data.highlights || []).map(h => `★ ${h}`).join("<br>");
-
-        document.getElementById("marquee-text").innerText =
-            data.bulletin || "Welcome";
-
-    } catch (e) {
-        console.error(e);
-    }
+/* -----------------------
+   CLOCK
+------------------------*/
+function clock(){
+  const now=new Date();
+  document.getElementById("time").innerText =
+    now.toLocaleTimeString();
+  document.getElementById("date").innerText =
+    now.toDateString();
 }
-
-// CLOCK
-function clock() {
-    const now = new Date();
-    document.getElementById("time").innerText = now.toLocaleTimeString();
-    document.getElementById("date").innerText = now.toDateString();
-}
-
-setInterval(clock, 1000);
+setInterval(clock,1000);
 clock();
 
-refreshSignage();
-setInterval(refreshSignage, 300000);
+/* -----------------------
+   LOAD DATA
+------------------------*/
+async function load(){
+
+  const res = await fetch(API);
+  const data = await res.json();
+
+  /* ---------------- IMAGE SLIDESHOW ---------------- */
+  if(data.images?.length){
+
+    const img = document.getElementById("slideshow");
+    img.src = data.images[0];
+
+    clearInterval(slideTimer);
+
+    slideTimer = setInterval(()=>{
+      slideIndex = (slideIndex + 1) % data.images.length;
+      img.src = data.images[slideIndex];
+    },8000);
+  }
+
+  /* ---------------- VIDEO (GOOGLE DRIVE) ---------------- */
+  if(data.videos?.length){
+
+    const video = document.getElementById("videoPlayer");
+
+    function playVideo(i){
+
+      const id = data.videos[i];
+
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+
+      video.src =
+        `https://drive.google.com/uc?export=download&id=${id}`;
+
+      video.play().catch(()=>{});
+    }
+
+    playVideo(videoIndex);
+
+    clearInterval(videoTimer);
+
+    videoTimer = setInterval(()=>{
+
+      videoIndex =
+        (videoIndex + 1) % data.videos.length;
+
+      playVideo(videoIndex);
+
+    },60000);
+  }
+
+  /* ---------------- TEXT ---------------- */
+  document.getElementById("notices").innerHTML =
+    (data.notices||[]).map(n=>"▶ "+n).join("<br>");
+
+  document.getElementById("highlights").innerHTML =
+    (data.highlights||[]).map(h=>"★ "+h).join("<br>");
+}
+
+load();
+setInterval(load,300000);
 
 </script>
 
