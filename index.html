@@ -289,11 +289,11 @@ if (data.videos && data.videos.length > 0) {
 
 function clock() {
     const now = new Date();
-    document.getElementById('time').innerText = now.toLocaleTimeString();
+    document.getElementById('time').innerText = now.toLocaleTimeString([];
     { 
         hour: '2-digit', 
         minute: '2-digit' 
-    };
+    });
     document.getElementById('date').innerText = now.toDateString();
 }
 
