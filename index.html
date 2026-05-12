@@ -39,12 +39,13 @@
         <div class="card poster-box"><img id="slideshow" src=""></div>
         <div class="right-col">
             <div class="card video-box">
-                <iframe id="yt-player" src=""autoplay; encrypted-media" allowfullscreen></iframe>
+                <!-- FIXED: Corrected the iframe tag attributes -->
+                <iframe id="yt-player" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
             <div class="bottom-split">
                 <div class="card info-panel" id="campus-updates" style="background: var(--gold); color: black;">
                     <h2>CAMPUS UPDATES</h2>
-                    <div  class="content">Loading updates...</div>
+                    <div class="content">Loading updates...</div>
                 </div>
                  <div class="card info-panel" style="background: var(--navy); color: white;">
                     <h2 style="color: var(--gold);">STUDENT HIGHLIGHTS</h2>
@@ -62,46 +63,50 @@
     </div>
 
 <script>
-    // FIX 1: Use your actual Google Script Exec URL
     const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
     let slideshowInterval;
 
 async function refreshSignage() {
     try {
-        // We use a simple fetch here. Google Apps Script handles the rest.
         const response = await fetch(API_URL);
-        
         if (!response.ok) throw new Error("Sync Error: " + response.status);
-        
         const data = await response.json();
 
-        // Populate Campus Updates
+        // 1. Campus Updates
         const campusBox = document.querySelector('#campus-updates .content');
         if (campusBox && data.notices) {
             campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
         }
 
-        // Populate Student Highlights
+        // 2. Student Highlights
         const highlightBox = document.querySelector('#student-highlights');
         if (highlightBox && data.highlights) {
             highlightBox.innerHTML = data.highlights.map(h => `<div style="margin-bottom:8px;">★ ${h}</div>`).join('');
         }
 
-                if (data.images && data.images.length > 0) {
+        // 3. Slideshow
+        if (data.images && data.images.length > 0) {
             const imgEl = document.getElementById('slideshow');
             let idx = 0;
-            
-            // Show first image immediately
             imgEl.src = data.images[0];
-            
             if(slideshowInterval) clearInterval(slideshowInterval);
             slideshowInterval = setInterval(() => {
                 idx = (idx + 1) % data.images.length;
                 imgEl.src = data.images[idx];
-            }, 10000); // Change image every 10 seconds
+            }, 10000);
         }
 
-        // Clear the Sync Error and show the Bulletin
+        // 4. Update Video (YOUTUBE LOGIC INSERTED HERE)
+        if (data.videoId) {
+            const playerEl = document.getElementById('yt-player');
+            const videoUrl = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
+            // Only update src if ID changed to avoid flickering
+            if (!playerEl.src.includes(data.videoId)) {
+                playerEl.src = videoUrl;
+            }
+        }
+
+        // 5. Bulletin
         document.getElementById('marquee-text').innerText = data.bulletin || "Welcome to Invictus";
 
     } catch (e) { 
@@ -125,6 +130,5 @@ async function refreshSignage() {
     refreshSignage();
     setInterval(refreshSignage, 300000); 
 </script>
-
 </body>
 </html>
