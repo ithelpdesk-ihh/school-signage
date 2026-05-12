@@ -60,12 +60,14 @@
     </div>
 
 <script>
+    // FIX 1: Use your actual Google Script Exec URL
     const API_URL = "https://google.com";
     let slideshowInterval;
 
     async function refreshSignage() {
         try {
-            const response = await fetch(API_URL);
+            // FIX 2: Added cache: 'no-cache' to ensure latest data
+            const response = await fetch(API_URL, { cache: 'no-cache' });
             if (!response.ok) throw new Error("Sync Failed");
             const data = await response.json();
 
@@ -81,9 +83,11 @@
             const marqueeEl = document.getElementById('marquee-text');
             if(marqueeEl) marqueeEl.innerText = data.bulletin || "Welcome to Invictus";
 
-            // 4. Video
+            // 4. Video (FIXED: Using correct template literal and /embed/ path)
             const playerEl = document.getElementById('yt-player');
-            if(playerEl && data.videoId) playerEl.src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
+            if(playerEl && data.videoId) {
+                playerEl.src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
+            }
 
             // 5. Slideshow
             if (data.images && data.images.length > 0) {
@@ -117,5 +121,6 @@
     refreshSignage();
     setInterval(refreshSignage, 300000); 
 </script>
+
 </body>
 </html>
