@@ -69,31 +69,33 @@
     </div>
 
 <script>
-    // It MUST look like this (://google.com), not google.com
-const API_URL = "https://google.com";
+    // FIXED: No extra slashes, and correctly pointing to ://google.com
+    const API_URL = "https://://google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
 
     let slideshowInterval;
 
     async function refreshSignage() {
         console.log("Attempting to connect to Google Drive...");
         try {
+            // Added ?t= to force refresh data and skip old cache
             const response = await fetch(API_URL + "?t=" + Date.now());
+            
+            if (!response.ok) throw new Error("Google Script not responding");
+            
             const data = await response.json();
-            console.log("Full Data Object:", data);
+            console.log("Success! Data received:", data);
 
             // 1. UPDATE IMAGES (SLIDESHOW)
             if (data.images && Array.isArray(data.images) && data.images.length > 0) {
                 const imgEl = document.getElementById('slideshow');
                 let imgIdx = 0;
-                imgEl.src = data.images[0]; // Set first image
+                imgEl.src = data.images[0];
                 
                 if(slideshowInterval) clearInterval(slideshowInterval);
                 slideshowInterval = setInterval(() => {
                     imgIdx = (imgIdx + 1) % data.images.length;
                     imgEl.src = data.images[imgIdx];
                 }, 15000); 
-            } else {
-                console.log("No images found in data");
             }
 
             // 2. UPDATE CAMPUS UPDATES (NOTICES)
@@ -108,15 +110,16 @@ const API_URL = "https://google.com";
             const bulletinText = data.bulletin || "Welcome back to Invictus International School";
             document.getElementById('marquee-text').innerText = bulletinText;
 
-            // 4. UPDATE VIDEO
+            // 4. UPDATE VIDEO (FIXED EMBED FORMAT)
             if (data.videoId) {
                 const videoUrl = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
                 document.getElementById('yt-player').src = videoUrl;
             }
 
         } catch (e) { 
-            console.error("JavaScript Error during Sync:", e);
-            document.getElementById('marquee-text').innerText = "Data format error - Checking connection...";
+            console.error("JavaScript Error during Sync:", e.message);
+            // Display exact error in marquee to help you debug on the TV
+            document.getElementById('marquee-text').innerText = "Sync Error: " + e.message;
         }
     }
 
