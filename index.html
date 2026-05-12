@@ -97,6 +97,14 @@ async function refreshSignage() {
         }
 
 
+                // 4. YouTube Video
+        if (data.videoId) {
+
+            const yt = document.getElementById('yt-player');
+
+            yt.src = `https://www.youtube.com/embed/${data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}&controls=0&rel=0`;
+        }
+
 
         // 5. Bulletin
         document.getElementById('marquee-text').innerText = data.bulletin || "Welcome to Invictus";
