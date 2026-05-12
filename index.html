@@ -36,20 +36,21 @@
         <div class="right-col">
             <div class="card video-box"><iframe id="yt-player" src=""></iframe></div>
             <div class="bottom-split">
-                <div class="card info-panel">
+                <div class="card info-panel" id="campus-updates">
                     <h2>CAMPUS UPDATES</h2>
-                    <div class="content" id="campus-updates">Loading...</div>
+                    <div class="content">Loading updates...</div>
                 </div>
+                <!-- FIXED STUDENT HIGHLIGHTS BOX -->
                 <div class="card info-panel" style="background: var(--navy); color: white;">
                     <h2 style="color: var(--gold);">STUDENT HIGHLIGHTS</h2>
-                    <div class="content" id="student-highlights">Loading...</div>
+                    <div class="content" id="student-highlights">Loading highlights...</div>
                 </div>
             </div>
         </div>
     </main>
     <div id="news-bar">
         <div class="ticker-label">BULLETIN</div>
-        <div class="marquee-container"><div id="marquee-text" class="marquee">Connecting...</div></div>
+        <div class="marquee-container"><div id="marquee-text" class="marquee">Initializing systems...</div></div>
     </div>
 
 <script>
@@ -58,23 +59,33 @@
 
     async function refreshSignage() {
         try {
-            const response = await fetch(API_URL);
+            const response = await fetch(API_URL, {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-cache'
+            });
+
+            if (!response.ok) throw new Error("Server response failed");
+            
             const data = await response.json();
 
-            // 1. Notices
-            document.getElementById('campus-updates').innerHTML = data.notices.map(n => `<div>▶ ${n}</div>`).join('');
+            // 1. Campus Updates
+            const campusBox = document.querySelector('#campus-updates .content');
+            if (data.notices) {
+                campusBox.innerHTML = data.notices.map(n => `<div style="margin-bottom:5px;">▶ ${n}</div>`).join('');
+            }
 
-            // 2. Highlights
-            document.getElementById('student-highlights').innerHTML = data.highlights.map(h => `<div>★ ${h}</div>`).join('');
+            // 2. Student Highlights (NEW LOGIC)
+            const highlightBox = document.getElementById('student-highlights');
+            if (data.highlights) {
+                highlightBox.innerHTML = data.highlights.map(h => `<div style="margin-bottom:8px;">★ ${h}</div>`).join('');
+            }
 
             // 3. Bulletin
-            document.getElementById('marquee-text').innerText = data.bulletin;
+            document.getElementById('marquee-text').innerText = data.bulletin || "Welcome back to Invictus";
 
-            // 4. Video
-            document.getElementById('yt-player').src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
-
-            // 5. Slideshow
-            if (data.images?.length > 0) {
+            // 4. Slideshow
+            if (data.images && data.images.length > 0) {
                 const imgEl = document.getElementById('slideshow');
                 let idx = 0;
                 imgEl.src = data.images[0];
@@ -82,25 +93,29 @@
                 slideshowInterval = setInterval(() => {
                     idx = (idx + 1) % data.images.length;
                     imgEl.src = data.images[idx];
-                }, 10000);
+                }, 15000);
             }
-        } catch (e) { console.error("Error:", e); }
+
+            // 5. Video
+            if (data.videoId) {
+                document.getElementById('yt-player').src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
+            }
+
+        } catch (e) { 
+            document.getElementById('marquee-text').innerText = "Sync Error: " + e.message;
+        }
     }
 
     function runClock() {
-        const timeEl = document.getElementById('time');
-        const dateEl = document.getElementById('date');
-        if (timeEl && dateEl) {
-            const now = new Date();
-            timeEl.innerText = now.toLocaleTimeString();
-            dateEl.innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
-        }
+        const now = new Date();
+        document.getElementById('time').innerText = now.toLocaleTimeString();
+        document.getElementById('date').innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
     }
 
     runClock();
     setInterval(runClock, 1000);
     refreshSignage();
-    setInterval(refreshSignage, 300000);
+    setInterval(refreshSignage, 300000); 
 </script>
 </body>
 </html>
