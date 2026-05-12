@@ -54,61 +54,46 @@
     </div>
 
 <script>
-    const API_URL = "https://google.com";
-    let slideshowInterval;
+const API_URL = "https://google.com";
 
-    async function refreshSignage() {
-        try {
-            // Using 'cors' mode and 'follow' for redirects is required for Apps Script
-            const response = await fetch(API_URL, {
-                method: 'GET',
-                mode: 'cors',
-                redirect: 'follow'
-            });
+let slideshowInterval;
 
-            if (!response.ok) throw new Error("Network response was not ok");
-            const data = await response.json();
+async function refreshSignage() {
+    try {
+        const response = await fetch(API_URL + "?t=" + Date.now());
+        const data = await response.json();
 
-            // Populate data into boxes
-            document.getElementById('campus-updates').innerHTML = data.notices.map(n => `<div>▶ ${n}</div>`).join('');
-            document.getElementById('student-highlights').innerHTML = data.highlights.map(h => `<div>★ ${h}</div>`).join('');
-            document.getElementById('marquee-text').innerText = data.bulletin;
+        // 1. UPDATE IMAGES
+        if (data.images && data.images.length > 0) {
+            const imgEl = document.getElementById('slideshow');
+            let imgIdx = 0;
+            imgEl.src = data.images[0];
+            if(slideshowInterval) clearInterval(slideshowInterval);
+            slideshowInterval = setInterval(() => {
+                imgIdx = (imgIdx + 1) % data.images.length;
+                imgEl.src = data.images[imgIdx];
+            }, 15000); 
+        }
 
-            // Update Video
+        // 2. UPDATE NOTICES
+        const campusBox = document.querySelector('#campus-updates .content');
+        campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
+
+        // 3. UPDATE BULLETIN
+        document.getElementById('marquee-text').innerText = data.bulletin;
+
+        // 4. UPDATE VIDEO (FIXED FORMAT)
+        if (data.videoId) {
             document.getElementById('yt-player').src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
-
-            // Update Slideshow
-            if (data.images?.length > 0) {
-                const imgEl = document.getElementById('slideshow');
-                let idx = 0;
-                imgEl.src = data.images[0];
-                if(slideshowInterval) clearInterval(slideshowInterval);
-                slideshowInterval = setInterval(() => {
-                    idx = (idx + 1) % data.images.length;
-                    imgEl.src = data.images[idx];
-                }, 10000);
-            }
-        } catch (e) {
-            console.error("Fetch Error:", e);
-            document.getElementById('marquee-text').innerText = "Sync Error: Check API URL";
         }
-    }
 
-    function runClock() {
-        const timeEl = document.getElementById('time');
-        const dateEl = document.getElementById('date');
-        if (timeEl && dateEl) {
-            const now = new Date();
-            timeEl.innerText = now.toLocaleTimeString();
-            dateEl.innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
-        }
+    } catch (e) { 
+        document.getElementById('marquee-text').innerText = "Sync Error: " + e.message;
     }
-
-    runClock();
-    setInterval(runClock, 1000);
-    refreshSignage();
-    setInterval(refreshSignage, 300000); // 5 min refresh
+}
+// ... rest of your clock functions
 </script>
+
 
 </body>
 </html>
