@@ -268,19 +268,8 @@ function loadVideo(id) {
 }
 
 if (data.videos && data.videos.length > 0) {
-
-    loadVideo(data.videos[0]);
-
-    clearInterval(videoTimer);
-
-    videoTimer = setInterval(() => {
-
-        currentVideo =
-          (currentVideo + 1) % data.videos.length;
-
-        loadVideo(data.videos[currentVideo]);
-
-    }, 60000); // change every 60 seconds
+    currentVideo = 0;
+    loadVideo(data.videos[currentVideo]);
 }
 
     } catch (e) {
