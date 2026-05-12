@@ -69,61 +69,51 @@
     </div>
 
 <script>
-    // 1. CONFIGURATION
-    const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
+    const API_URL = "https://google.com";
     let slideshowInterval;
 
     async function refreshSignage() {
         console.log("Attempting to connect to Google Drive...");
         try {
-            // Using a timestamp (?t=) prevents the browser from loading "old" data
             const response = await fetch(API_URL + "?t=" + Date.now());
-            
-            if (!response.ok) throw new Error("Google Script not responding (Status: " + response.status + ")");
-            
             const data = await response.json();
             console.log("Success! Data received:", data);
 
-            // 1. SAFE IMAGES UPDATE
-            if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+            // 1. UPDATE IMAGES
+            // We check for data.images or data[0] just in case
+            const images = data.images || data[0]; 
+            if (images && images.length > 0) {
                 const imgEl = document.getElementById('slideshow');
                 let imgIdx = 0;
-                imgEl.src = data.images[0];
+                imgEl.src = images[0];
                 
                 if(slideshowInterval) clearInterval(slideshowInterval);
                 slideshowInterval = setInterval(() => {
-                    imgIdx = (imgIdx + 1) % data.images.length;
-                    imgEl.src = data.images[imgIdx];
+                    imgIdx = (imgIdx + 1) % images.length;
+                    imgEl.src = images[imgIdx];
                 }, 15000); 
             }
 
-            // 2. SAFE NOTICES UPDATE (Fixed the 'map' crash)
+            // 2. UPDATE CAMPUS UPDATES
+            const notices = data.notices || data[1];
             const campusBox = document.querySelector('#campus-updates .content');
-            if (data.notices && Array.isArray(data.notices)) {
-                campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
-            } else {
-                campusBox.innerHTML = "<div class='notice-item'>No notices found in Sheet.</div>";
+            if (notices && Array.isArray(notices)) {
+                campusBox.innerHTML = notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
             }
 
-            // 3. SAFE BULLETIN UPDATE
-            if (data.bulletin) {
-                document.getElementById('marquee-text').innerText = data.bulletin;
+            // 3. UPDATE BULLETIN
+            const bulletin = data.bulletin || data[2];
+            if (bulletin) {
+                document.getElementById('marquee-text').innerText = bulletin;
             }
 
-            // 4. FIXED VIDEO LOGIC (Uses proper Embed format)
+            // 4. UPDATE VIDEO (Fixed Embed Format)
             if (data.videoId) {
-                const ytPlayer = document.getElementById('yt-player');
-                const videoUrl = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
-                // Only update if the URL has changed to prevent video restarting unnecessarily
-                if (ytPlayer.src !== videoUrl) {
-                    ytPlayer.src = videoUrl;
-                }
+                document.getElementById('yt-player').src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
             }
 
         } catch (e) { 
-            console.error("Connection Failed:", e.message);
-            // Show the specific error in the marquee for easier debugging on the TV
-            document.getElementById('marquee-text').innerText = "Connecting to Google Drive... (Error: " + e.message + ")";
+            console.error("Sync Error:", e);
         }
     }
 
@@ -133,12 +123,9 @@
         document.getElementById('date').innerText = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
     }
 
-    // INITIALIZE EVERYTHING
     runClock();
     setInterval(runClock, 1000);
-    
     refreshSignage();
-    // Re-check for new images/notices every 5 minutes
     setInterval(refreshSignage, 300000); 
 </script>
 
