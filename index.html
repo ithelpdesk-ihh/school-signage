@@ -22,7 +22,7 @@
         .bottom-split { flex: 1.2; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         
         .info-panel { padding: 18px 25px; background: #ffffff; color: #1e293b; height: 100%; box-sizing: border-box; }
-        .info-panel h2 { margin: 0 0 10px; font-size: 1.3rem; color: var(--navy); display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #f1f5f9; }
+        .info-panel h2 { margin: 0 0 10px; font-size: 1.3rem; color: var(--navy); display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #f1f5f9; padding-bottom: 5px; }
         .info-panel h2::before { content: ""; width: 6px; height: 22px; background: var(--gold); border-radius: 3px; }
         .notice-item { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; color: #1e293b; }
 
@@ -33,9 +33,15 @@
         
         @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
         iframe, img { width: 100%; height: 100%; border: none; object-fit: cover; }
+
+        /* Step 4: Invisible Refresh Button */
+        .refresh-btn { position: fixed; bottom: 0; right: 0; width: 50px; height: 50px; opacity: 0; z-index: 999; cursor: pointer; }
     </style>
 </head>
 <body>
+
+    <!-- Step 4: Click bottom right corner to force refresh -->
+    <div class="refresh-btn" onclick="location.reload(true)"></div>
 
     <header>
         <div class="school-name">Invictus International School<br><span style="color: var(--gold); font-size: 3rem;">Horizon Hills</span></div>
@@ -52,7 +58,7 @@
 
         <div class="right-col">
             <div class="card video-box">
-                <!-- Ensure your Google Script returns a YouTube ID to make this dynamic -->
+                <!-- Step 3: Fixed YouTube Embed link for better compatibility -->
                 <iframe id="yt-player" src="https://youtube.com"></iframe>
             </div>
             
@@ -72,29 +78,27 @@
     <div id="news-bar">
         <div class="ticker-label">BULLETIN</div>
         <div class="marquee-container">
-            <div id="marquee-text" class="marquee">Initializing...</div>
+            <div id="marquee-text" class="marquee">Initializing systems...</div>
         </div>
     </div>
 
 <script>
-    // YOUR GOOGLE APPS SCRIPT URL
     const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
     
     let slideshowInterval;
 
     async function refreshSignage() {
-        console.log("Fetching data from Google Drive...");
+        console.log("Fetching data...");
         try {
-            // Using ?t= avoids the browser showing "old" data from the cache
+            // Force browser to fetch new data by adding a timestamp
             const response = await fetch(API_URL + "?t=" + Date.now());
-            if (!response.ok) throw new Error('Network response was not ok');
+            if (!response.ok) throw new Error('Network status: ' + response.status);
             
             const data = await response.json();
-            console.log("Success! Data received:", data);
-
+            
             // 1. UPDATE IMAGES
-            const imgEl = document.getElementById('slideshow');
             if (data.images && data.images.length > 0) {
+                const imgEl = document.getElementById('slideshow');
                 let imgIdx = 0;
                 imgEl.src = data.images[0];
                 
@@ -105,23 +109,23 @@
                 }, 15000); 
             }
 
-            // 2. UPDATE CAMPUS NOTICES
+            // 2. UPDATE NOTICES
             const campusBox = document.querySelector('#campus-updates .content');
             if (data.notices && data.notices.length > 0) {
-                // FIXED: We use 'n' directly because 'n.title' doesn't exist in your Sheet data
                 campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
             } else {
-                campusBox.innerHTML = "No current updates.";
+                campusBox.innerHTML = "No notices found in Sheet.";
             }
 
-            // 3. UPDATE BULLETIN (Moving Text)
+            // 3. UPDATE BULLETIN
             if (data.bulletin) {
                 document.getElementById('marquee-text').innerText = data.bulletin;
             }
 
         } catch (e) { 
-            console.error("Connection Failed:", e);
-            document.getElementById('marquee-text').innerText = "Connecting to Google Drive...";
+            console.error("Connection Error:", e);
+            // Display error in marquee for debugging on the TV
+            document.getElementById('marquee-text').innerText = "ERROR: " + e.message + " - Ensure Apps Script is shared to 'Anyone'";
         }
     }
 
@@ -131,12 +135,9 @@
         document.getElementById('date').innerText = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
     }
 
-    // START EVERYTHING
     runClock();
     setInterval(runClock, 1000);
-    
     refreshSignage();
-    // Check Google Drive for new updates every 5 minutes
     setInterval(refreshSignage, 300000); 
 </script>
 
