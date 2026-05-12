@@ -50,35 +50,43 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
     let slideshowInterval;
 
-    async function refreshSignage() {
-        try {
-            const response = await fetch(API_URL + "?t=" + Date.now());
-            const data = await response.json();
+async function refreshSignage() {
+    try {
+        // Use a simple fetch that Google doesn't block
+        const response = await fetch(API_URL, {
+            method: 'GET',
+            mode: 'cors', // Crucial for cross-domain requests
+            cache: 'no-cache'
+        });
 
-            // 1. Slideshow
-            if (data.images?.length > 0) {
-                const imgEl = document.getElementById('slideshow');
-                let idx = 0;
-                imgEl.src = data.images[0];
-                if(slideshowInterval) clearInterval(slideshowInterval);
-                slideshowInterval = setInterval(() => {
-                    idx = (idx + 1) % data.images.length;
-                    imgEl.src = data.images[idx];
-                }, 10000);
-            }
+        if (!response.ok) throw new Error("Server response failed");
+        
+        const data = await response.json();
 
-            // 2. Notices
-            document.querySelector('#campus-updates .content').innerHTML = data.notices.map(n => `<div>▶ ${n}</div>`).join('');
-            
-            // 3. Bulletin
-            document.getElementById('marquee-text').innerText = data.bulletin;
+        // 1. Update Notices
+        const campusBox = document.querySelector('#campus-updates .content');
+        campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
 
-            // 4. Video (Fixed Embed URL)
-            if (data.videoId) {
-                document.getElementById('yt-player').src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
-            }
-        } catch (e) { document.getElementById('marquee-text').innerText = "Connection Error: " + e.message; }
+        // 2. Update Bulletin
+        document.getElementById('marquee-text').innerText = data.bulletin;
+
+        // 3. Slideshow Logic
+        if (data.images?.length > 0) {
+            const imgEl = document.getElementById('slideshow');
+            let idx = 0;
+            imgEl.src = data.images[0];
+            if(slideshowInterval) clearInterval(slideshowInterval);
+            slideshowInterval = setInterval(() => {
+                idx = (idx + 1) % data.images.length;
+                imgEl.src = data.images[idx];
+            }, 15000);
+        }
+    } catch (e) { 
+        document.getElementById('marquee-text').innerText = "Sync Error: " + e.message;
+        console.error("Fetch Error:", e);
     }
+}
+
 
     function runClock() {
         const now = new Date();
