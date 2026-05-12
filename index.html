@@ -83,64 +83,46 @@
     </div>
 
 <script>
-    // 1. CONFIGURATION
-    const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
+    const API_URL = "https://google.com";
     let slideshowInterval;
 
     async function refreshSignage() {
-        console.log("Fetching data from Google Drive...");
+        console.log("Attempting to fetch data...");
         try {
-            // Fetch data with a timestamp to bypass browser cache
-            const response = await fetch(`${API_URL}?t=${Date.now()}`);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const response = await fetch(API_URL + "?t=" + Date.now());
+            if (!response.ok) throw new Error('Google Script not responding');
             
             const data = await response.json();
             console.log("Success! Data received:", data);
 
-            // 2. UPDATE IMAGES (SLIDESHOW)
+            // Images
             const imgEl = document.getElementById('slideshow');
             if (data.images && data.images.length > 0) {
                 let imgIdx = 0;
                 imgEl.src = data.images[0];
-                
-                // Reset interval to prevent overlaps
                 if(slideshowInterval) clearInterval(slideshowInterval);
                 slideshowInterval = setInterval(() => {
                     imgIdx = (imgIdx + 1) % data.images.length;
                     imgEl.src = data.images[imgIdx];
                 }, 15000); 
-            } else {
-                imgEl.src = "https://placeholder.com";
             }
 
-            // 3. UPDATE CAMPUS UPDATES
+            // Notices
             const campusBox = document.querySelector('#campus-updates .content');
             if (data.notices && data.notices.length > 0) {
-                // Ensure we handle both simple strings and objects if the script format changes
-                campusBox.innerHTML = data.notices
-                    .map(n => `<div class="notice-item">▶ ${n.title || n}</div>`)
-                    .join('');
-            } else {
-                campusBox.innerHTML = "<div class='notice-item'>No current updates</div>";
+                campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
             }
 
-            // 4. UPDATE BULLETIN (MARQUEE)
+            // Bulletin
             if (data.bulletin) {
                 document.getElementById('marquee-text').innerText = data.bulletin;
             }
 
-            // 5. UPDATE VIDEO (If a YouTube ID is provided in data, otherwise use fallback)
-            const ytPlayer = document.getElementById('yt-player');
-            if (data.videoId) {
-                ytPlayer.src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
-            } else if (!ytPlayer.src || ytPlayer.src.includes("://youtube.com")) {
-                // Fix for the 'Refused to Display' error seen in console
-                ytPlayer.src = "https://youtube.com";
-            }
-
         } catch (e) { 
-            console.error("Connection Failed:", e);
-            document.getElementById('marquee-text').innerText = "ERROR: Connection Failed. Retrying...";
+            console.error("Connection Failed. Checking internet...", e);
+            document.getElementById('marquee-text').innerText = "OFFLINE: Checking connection...";
+            // Try again in 30 seconds if it failed
+            setTimeout(refreshSignage, 30000);
         }
     }
 
@@ -150,14 +132,12 @@
         document.getElementById('date').innerText = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
     }
 
-    // INITIALIZE
     runClock();
     setInterval(runClock, 1000);
-    
-    // Initial fetch and set 5-minute sync interval
     refreshSignage();
     setInterval(refreshSignage, 300000); 
 </script>
+
 
 </body>
 </html>
