@@ -76,40 +76,34 @@
 
     <script>
     // 1. THIS IS THE LINK YOU COPIED AFTER DEPLOYING YOUR APPS SCRIPT
-    const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
 
-    async function updateFromDrive() {
-        try {
-            // This line "calls" Google to get the data
-            const response = await fetch(API_URL);
-            const data = await response.json();
+async function refreshSignage() {
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
 
-            // 2. UPDATE THE IMAGE
-            // data.images is the list of files from your folder
-            if (data.images.length > 0) {
-                document.getElementById('slideshow').src = data.images[0]; 
-            }
+        // 1. Update Images (Slideshow)
+        let imgIdx = 0;
+        const imgEl = document.getElementById('slideshow');
+        imgEl.src = data.images[0];
+        setInterval(() => {
+            imgIdx = (imgIdx + 1) % data.images.length;
+            imgEl.src = data.images[imgIdx];
+        }, 15000); // Swap every 15s
 
-            // 3. UPDATE THE NOTICES (Campus Updates)
-            const updatesBox = document.querySelector('#campus-updates');
-            updatesBox.innerHTML = `<h2>CAMPUS UPDATES</h2>`; // Reset header
-            data.notices.forEach(item => {
-                updatesBox.innerHTML += `<div class="notice-item">▶ ${item}</div>`;
-            });
+        // 2. Update Campus Notices (Split into two)
+        const campusList = document.querySelector('#campus-updates .notice-list');
+        campusList.innerHTML = data.notices.slice(0, 3).map(n => `<div class="notice-item">▶ ${n.title}</div>`).join('');
 
-            // 4. UPDATE THE BULLETIN (Moving words)
-            document.getElementById('marquee-text').innerText = data.bulletin;
+        // 3. Update Bulletin
+        document.getElementById('marquee-text').innerText = data.bulletin;
 
-        } catch (error) {
-            console.log("Could not get data from Google Drive", error);
-        }
-    }
+    } catch (e) { console.error("Sync Error", e); }
+}
 
-    // Run the update when the page first opens
-    updateFromDrive();
-
-    // Run the update every 5 minutes (300,000 milliseconds)
-    setInterval(updateFromDrive, 300000);
+refreshSignage();
+setInterval(refreshSignage, 300000); // Check for new Drive data every 5 mins
 
     // Also keep your clock running
     function runClock() {
