@@ -240,26 +240,23 @@ async function refreshSignage() {
 
     const video = document.getElementById("video-player");
 
-    function loadVideo(index) {
+    function loadVideo(id) {
 
-        const fileId = data.videos[index];
+    const video = document.getElementById("video-player");
 
-        if (!fileId) return;
+    // reset old video
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
 
-        // Reset video first (prevents overlap bugs)
-        video.pause();
-        video.removeAttribute("src");
-        video.load();
+    // OPTION 2 STREAM LINK
+    video.src =
+      `https://docs.google.com/uc?export=download&id=${id}`;
 
-        // Set new source
-        video.src =
-          `https://drive.google.com/uc?export=download&id=${fileId}`;
-
-        // Force play (with retry for browsers)
-        video.play().catch(() => {
-            setTimeout(() => video.play(), 500);
-        });
-    }
+    video.play().catch(err => {
+        console.log("Autoplay issue:", err);
+    });
+}
 
     // Start first video
     loadVideo(currentVideo);
