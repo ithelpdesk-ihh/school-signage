@@ -3,28 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invictus Digital Signage</title>
+    <title>Invictus Live Drive Signage</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root { --navy: #0f172a; --gold: #f59e0b; --accent: #334155; --text-light: #f8fafc; --bg-dark: #020617; }
         body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; background-color: var(--bg-dark); color: var(--text-light); font-family: 'Inter', sans-serif; }
+        
         header { height: 18vh; background: var(--navy); display: flex; justify-content: space-between; align-items: center; padding: 0 50px; border-bottom: 6px solid var(--gold); box-sizing: border-box; }
         .school-name { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1.1; }
         .clock-container { text-align: right; min-width: 450px; }
         #time { font-size: 7rem; font-weight: 800; line-height: 1; }
-        #date { color: var(--gold); font-size: 2rem; font-weight: 700; text-transform: uppercase; }
-        main { height: 70vh; display: grid; grid-template-columns: 1fr 1.3fr; gap: 20px; padding: 20px; box-sizing: border-box; }
-        .card { background: var(--accent); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #date { color: var(--gold); font-size: 2rem; font-weight: 700; }
+
+        main { height: 74vh; display: grid; grid-template-columns: 1fr 1.3fr; gap: 20px; padding: 20px; box-sizing: border-box; }
+        .card { background: var(--accent); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
         .right-col { display: flex; flex-direction: column; gap: 20px; }
         .video-box { flex: 4; background: #000; }
-        .bottom-split { flex: 1.5; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .info-panel { padding: 20px; background: #ffffff; color: #1e293b; }
-        .info-panel h2 { margin: 0 0 10px; font-size: 1.4rem; color: var(--navy); border-bottom: 2px solid #eee; }
-        .notice-item { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; color: #334155; }
-        #news-bar { height: 12vh; background: var(--gold); color: #000; display: flex; align-items: center; }
-        .ticker-label { background: var(--navy); color: #fff; padding: 0 40px; height: 100%; display: flex; align-items: center; font-size: 1.8rem; font-weight: 900; z-index: 20; }
+        .bottom-split { flex: 1.2; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        
+        .info-panel { padding: 18px 25px; background: #ffffff; color: #1e293b; }
+        .info-panel h2 { margin: 0 0 10px; font-size: 1.3rem; color: var(--navy); display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #f1f5f9; }
+        .info-panel h2::before { content: ""; width: 6px; height: 22px; background: var(--gold); border-radius: 3px; }
+        .notice-item { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+
+        #news-bar { height: 8vh; background: var(--gold); color: #000; display: flex; align-items: center; }
+        .ticker-label { background: var(--navy); color: #fff; padding: 0 30px; height: 100%; display: flex; align-items: center; font-size: 1.4rem; font-weight: 900; }
         .marquee-container { flex: 1; overflow: hidden; }
-        .marquee { white-space: nowrap; font-size: 3.5rem; font-weight: 900; display: inline-block; padding-left: 100%; animation: scroll 30s linear infinite; line-height: 12vh; }
+        .marquee { white-space: nowrap; font-size: 2.5rem; font-weight: 800; display: inline-block; padding-left: 100%; animation: scroll 35s linear infinite; line-height: 8vh; }
         @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
         iframe, img { width: 100%; height: 100%; border: none; object-fit: cover; }
     </style>
@@ -41,12 +46,14 @@
 
     <main>
         <div class="card poster-box">
-            <img id="slideshow" src="https://placeholder.com...">
+            <img id="slideshow" src="">
         </div>
+
         <div class="right-col">
             <div class="card video-box">
-                <iframe id="yt-player" src="https://youtube.com"></iframe>
+                <iframe id="yt-player" src=""></iframe>
             </div>
+            
             <div class="bottom-split">
                 <div class="card info-panel" id="campus-updates">
                     <h2>CAMPUS UPDATES</h2>
@@ -63,58 +70,48 @@
     <div id="news-bar">
         <div class="ticker-label">BULLETIN</div>
         <div class="marquee-container">
-            <div id="marquee-text" class="marquee">Initializing systems...</div>
+            <div id="marquee-text" class="marquee">Connecting to Google Drive...</div>
         </div>
     </div>
 
     <script>
-        const API_URL = "https://google.com";
-        let slideshowInterval;
+    // 1. THIS IS THE LINK YOU COPIED AFTER DEPLOYING YOUR APPS SCRIPT
+    const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
 
-        async function refreshSignage() {
-            try {
-                const response = await fetch(API_URL + "?t=" + Date.now());
-                if (!response.ok) throw new Error('Network response was not ok');
-                const data = await response.json();
-                
-                // Images
-                const imgEl = document.getElementById('slideshow');
-                if (data.images && data.images.length > 0) {
-                    let imgIdx = 0;
-                    imgEl.src = data.images[0];
-                    if(slideshowInterval) clearInterval(slideshowInterval);
-                    slideshowInterval = setInterval(() => {
-                        imgIdx = (imgIdx + 1) % data.images.length;
-                        imgEl.src = data.images[imgIdx];
-                    }, 15000);
-                }
+async function refreshSignage() {
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
 
-                // Notices
-                const campusContent = document.querySelector('#campus-updates .content');
-                if (data.notices) {
-                    campusContent.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
-                }
+        // 1. Update Images (Slideshow)
+        let imgIdx = 0;
+        const imgEl = document.getElementById('slideshow');
+        imgEl.src = data.images[0];
+        setInterval(() => {
+            imgIdx = (imgIdx + 1) % data.images.length;
+            imgEl.src = data.images[imgIdx];
+        }, 15000); // Swap every 15s
 
-                // Bulletin
-                if (data.bulletin) {
-                    document.getElementById('marquee-text').innerText = data.bulletin;
-                }
-            } catch (e) {
-                console.error("Signage Sync Error:", e);
-                document.getElementById('marquee-text').innerText = "Update failed. Checking connection...";
-            }
-        }
+        // 2. Update Campus Notices (Split into two)
+        const campusList = document.querySelector('#campus-updates .notice-list');
+        campusList.innerHTML = data.notices.slice(0, 3).map(n => `<div class="notice-item">▶ ${n.title}</div>`).join('');
 
-        function runClock() {
-            const now = new Date();
-            document.getElementById('time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            document.getElementById('date').innerText = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
-        }
+        // 3. Update Bulletin
+        document.getElementById('marquee-text').innerText = data.bulletin;
 
-        runClock();
-        setInterval(runClock, 1000);
-        refreshSignage();
-        setInterval(refreshSignage, 300000);
-    </script>
+    } catch (e) { console.error("Sync Error", e); }
+}
+
+refreshSignage();
+setInterval(refreshSignage, 300000); // Check for new Drive data every 5 mins
+
+    // Also keep your clock running
+    function runClock() {
+        const now = new Date();
+        document.getElementById('time').innerText = now.toLocaleTimeString();
+    }
+    setInterval(runClock, 1000);
+</script>
+
 </body>
 </html>
