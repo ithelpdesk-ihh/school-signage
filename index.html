@@ -99,7 +99,8 @@ async function refreshSignage() {
         // 4. Update Video (YOUTUBE LOGIC INSERTED HERE)
         if (data.videoId) {
             const playerEl = document.getElementById('yt-player');
-            const videoUrl = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
+            const videoUrl = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`; 
+
             // Only update src if ID changed to avoid flickering
             if (!playerEl.src.includes(data.videoId)) {
                 playerEl.src = videoUrl;
