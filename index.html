@@ -64,47 +64,50 @@
     const API_URL = "https://google.com";
     let slideshowInterval;
 
-    async function refreshSignage() {
-        try {
-            // FIX 2: Added cache: 'no-cache' to ensure latest data
-            const response = await fetch(API_URL, { cache: 'no-cache' });
-            if (!response.ok) throw new Error("Sync Failed");
-            const data = await response.json();
+   async function refreshSignage() {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
 
-            // 1. Notices
-            const campusBox = document.getElementById('campus-updates');
-            if(campusBox && data.notices) campusBox.innerHTML = data.notices.map(n => `<div>▶ ${n}</div>`).join('');
+        if (!response.ok) throw new Error("Server response failed");
+        
+        const data = await response.json();
 
-            // 2. Highlights
-            const highlightBox = document.getElementById('student-highlights');
-            if(highlightBox && data.highlights) highlightBox.innerHTML = data.highlights.map(h => `<div>★ ${h}</div>`).join('');
-
-            // 3. Bulletin
-            const marqueeEl = document.getElementById('marquee-text');
-            if(marqueeEl) marqueeEl.innerText = data.bulletin || "Welcome to Invictus";
-
-            // 4. Video (FIXED: Using correct template literal and /embed/ path)
-            const playerEl = document.getElementById('yt-player');
-            if(playerEl && data.videoId) {
-                playerEl.src = `https://youtube.com{data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}`;
-            }
-
-            // 5. Slideshow
-            if (data.images && data.images.length > 0) {
-                const imgEl = document.getElementById('slideshow');
-                let idx = 0;
-                imgEl.src = data.images[0];
-                if(slideshowInterval) clearInterval(slideshowInterval);
-                slideshowInterval = setInterval(() => {
-                    idx = (idx + 1) % data.images.length;
-                    imgEl.src = data.images[idx];
-                }, 15000);
-            }
-        } catch (e) { 
-            console.error(e);
-            document.getElementById('marquee-text').innerText = "Sync Error: Check API Connection";
+        // 1. Update Notices
+        const campusBox = document.querySelector('#campus-updates .content');
+        if (data.notices) {
+            campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
         }
+
+        // 2. Update Student Highlights (ADDED THIS PART)
+        const highlightBox = document.querySelector('#student-highlights');
+        if (data.highlights) {
+            highlightBox.innerHTML = data.highlights.map(h => `<div style="margin-bottom:8px;">★ ${h}</div>`).join('');
+        }
+
+        // 3. Update Bulletin (This also clears the "Sync Error" text)
+        document.getElementById('marquee-text').innerText = data.bulletin || "Welcome to Invictus";
+
+        // 4. Slideshow Logic
+        if (data.images?.length > 0) {
+            const imgEl = document.getElementById('slideshow');
+            let idx = 0;
+            imgEl.src = data.images[0];
+            if(slideshowInterval) clearInterval(slideshowInterval);
+            slideshowInterval = setInterval(() => {
+                idx = (idx + 1) % data.images.length;
+                imgEl.src = data.images[idx];
+            }, 15000);
+        }
+    } catch (e) { 
+        document.getElementById('marquee-text').innerText = "Sync Error: " + e.message;
+        console.error("Fetch Error:", e);
     }
+}
+
 
     function runClock() {
         const timeEl = document.getElementById('time');
