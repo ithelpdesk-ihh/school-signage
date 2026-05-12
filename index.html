@@ -85,6 +85,20 @@ async function refreshSignage() {
             highlightBox.innerHTML = data.highlights.map(h => `<div style="margin-bottom:8px;">★ ${h}</div>`).join('');
         }
 
+                if (data.images && data.images.length > 0) {
+            const imgEl = document.getElementById('slideshow');
+            let idx = 0;
+            
+            // Show first image immediately
+            imgEl.src = data.images[0];
+            
+            if(slideshowInterval) clearInterval(slideshowInterval);
+            slideshowInterval = setInterval(() => {
+                idx = (idx + 1) % data.images.length;
+                imgEl.src = data.images[idx];
+            }, 10000); // Change image every 10 seconds
+        }
+
         // Clear the Sync Error and show the Bulletin
         document.getElementById('marquee-text').innerText = data.bulletin || "Welcome to Invictus";
 
