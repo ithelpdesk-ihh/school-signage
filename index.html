@@ -104,15 +104,35 @@ async function refreshSignage() {
         document.getElementById("marquee-text").innerText = data.bulletin || "Welcome";
 
         // ✅ YOUTUBE LOGIC
-        if (data.videoId) {
+        let currentVideo = 0;
+let videoTimer;
 
-        const player = document.getElementById("yt-player");
+// =========================
+// YOUTUBE ROTATION
+// =========================
+function loadVideo(id) {
 
-        const url =
-        `https://www.youtube.com/embed/${data.videoId}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${data.videoId}`;
+    const player = document.getElementById("yt-player");
 
-        player.src = url;
-        }
+    player.src =
+      `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${id}`;
+}
+
+if (data.videos && data.videos.length > 0) {
+
+    loadVideo(data.videos[0]);
+
+    clearInterval(videoTimer);
+
+    videoTimer = setInterval(() => {
+
+        currentVideo =
+          (currentVideo + 1) % data.videos.length;
+
+        loadVideo(data.videos[currentVideo]);
+
+    }, 60000); // change every 60 seconds
+}
 
     } catch (e) {
         console.error(e);
