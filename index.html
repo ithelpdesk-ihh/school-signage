@@ -1,117 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invictus Live Drive Signage</title>
-    <link href="https://googleapis.com" rel="stylesheet">
-    <style>
-        :root { --navy: #0f172a; --gold: #f59e0b; --accent: #334155; --text-light: #f8fafc; --bg-dark: #020617; }
-        body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; background-color: var(--bg-dark); color: var(--text-light); font-family: 'Inter', sans-serif; }
-        
-        header { height: 18vh; background: var(--navy); display: flex; justify-content: space-between; align-items: center; padding: 0 50px; border-bottom: 6px solid var(--gold); box-sizing: border-box; }
-        .school-name { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; line-height: 1.1; }
-        .clock-container { text-align: right; min-width: 450px; }
-        #time { font-size: 7rem; font-weight: 800; line-height: 1; }
-        #date { color: var(--gold); font-size: 2rem; font-weight: 700; }
-
-        main { height: 74vh; display: grid; grid-template-columns: 1fr 1.3fr; gap: 20px; padding: 20px; box-sizing: border-box; }
-        .card { background: var(--accent); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
-        .right-col { display: flex; flex-direction: column; gap: 20px; }
-        .video-box { flex: 4; background: #000; }
-        .bottom-split { flex: 1.2; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        
-        .info-panel { padding: 18px 25px; background: #ffffff; color: #1e293b; }
-        .info-panel h2 { margin: 0 0 10px; font-size: 1.3rem; color: var(--navy); display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #f1f5f9; }
-        .info-panel h2::before { content: ""; width: 6px; height: 22px; background: var(--gold); border-radius: 3px; }
-        .notice-item { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
-
-        #news-bar { height: 8vh; background: var(--gold); color: #000; display: flex; align-items: center; }
-        .ticker-label { background: var(--navy); color: #fff; padding: 0 30px; height: 100%; display: flex; align-items: center; font-size: 1.4rem; font-weight: 900; }
-        .marquee-container { flex: 1; overflow: hidden; }
-        .marquee { white-space: nowrap; font-size: 2.5rem; font-weight: 800; display: inline-block; padding-left: 100%; animation: scroll 35s linear infinite; line-height: 8vh; }
-        @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
-        iframe, img { width: 100%; height: 100%; border: none; object-fit: cover; }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div class="school-name">Invictus International School<br><span style="color: var(--gold); font-size: 3rem;">Horizon Hills</span></div>
-        <div class="clock-container">
-            <div id="time">00:00:00</div>
-            <div id="date">LOADING...</div>
-        </div>
-    </header>
-
-    <main>
-        <div class="card poster-box">
-            <img id="slideshow" src="">
-        </div>
-
-        <div class="right-col">
-            <div class="card video-box">
-                <iframe id="yt-player" src=""></iframe>
-            </div>
-            
-            <div class="bottom-split">
-                <div class="card info-panel" id="campus-updates">
-                    <h2>CAMPUS UPDATES</h2>
-                    <div class="content">Loading updates...</div>
-                </div>
-                <div class="card info-panel" id="student-highlights" style="background: var(--navy); color: white;">
-                    <h2 style="color: var(--gold);">STUDENT HIGHLIGHTS</h2>
-                    <div class="content">Loading highlights...</div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div id="news-bar">
-        <div class="ticker-label">BULLETIN</div>
-        <div class="marquee-container">
-            <div id="marquee-text" class="marquee">Connecting to Google Drive...</div>
-        </div>
-    </div>
-
-    <script>
-    // 1. THIS IS THE LINK YOU COPIED AFTER DEPLOYING YOUR APPS SCRIPT
+<script>
+    // 1. Your verified API URL
     const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
 
-async function refreshSignage() {
-    try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
+    let slideshowInterval;
 
-        // 1. Update Images (Slideshow)
-        let imgIdx = 0;
-        const imgEl = document.getElementById('slideshow');
-        imgEl.src = data.images[0];
-        setInterval(() => {
-            imgIdx = (imgIdx + 1) % data.images.length;
-            imgEl.src = data.images[imgIdx];
-        }, 15000); // Swap every 15s
+    async function refreshSignage() {
+        console.log("Fetching data from Google Drive...");
+        try {
+            // Adding a timestamp to prevent the browser from showing "old" cached data
+            const response = await fetch(API_URL + "?t=" + Date.now());
+            const data = await response.json();
+            console.log("Data received:", data);
 
-        // 2. Update Campus Notices (Split into two)
-        const campusList = document.querySelector('#campus-updates .notice-list');
-        campusList.innerHTML = data.notices.slice(0, 3).map(n => `<div class="notice-item">▶ ${n.title}</div>`).join('');
+            // 1. Update Images (Slideshow)
+            const imgEl = document.getElementById('slideshow');
+            if (data.images && data.images.length > 0) {
+                let imgIdx = 0;
+                imgEl.src = data.images[0];
+                
+                // Clear old interval if it exists to prevent speed-up bugs
+                if(slideshowInterval) clearInterval(slideshowInterval);
+                
+                slideshowInterval = setInterval(() => {
+                    imgIdx = (imgIdx + 1) % data.images.length;
+                    imgEl.src = data.images[imgIdx];
+                }, 15000); 
+            }
 
-        // 3. Update Bulletin
-        document.getElementById('marquee-text').innerText = data.bulletin;
+            // 2. Update Campus Updates (Left Panel)
+            const campusBox = document.querySelector('#campus-updates .content');
+            if (data.notices) {
+                campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
+            }
 
-    } catch (e) { console.error("Sync Error", e); }
-}
+            // 3. Update Bulletin (Bottom Marquee)
+            if (data.bulletin) {
+                document.getElementById('marquee-text').innerText = data.bulletin;
+            }
 
-refreshSignage();
-setInterval(refreshSignage, 300000); // Check for new Drive data every 5 mins
+        } catch (e) { 
+            console.error("Fetch Error: Check if Apps Script is deployed as 'Anyone'", e); 
+        }
+    }
 
-    // Also keep your clock running
     function runClock() {
         const now = new Date();
-        document.getElementById('time').innerText = now.toLocaleTimeString();
+        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        
+        document.getElementById('time').innerText = now.toLocaleTimeString('en-US', timeOptions);
+        document.getElementById('date').innerText = now.toLocaleDateString('en-US', dateOptions);
     }
-    setInterval(runClock, 1000);
-</script>
 
-</body>
-</html>
+    // Initial Start
+    runClock();
+    setInterval(runClock, 1000);
+    
+    refreshSignage();
+    setInterval(refreshSignage, 300000); // Refresh data every 5 minutes
+</script>
