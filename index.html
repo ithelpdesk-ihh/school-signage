@@ -66,31 +66,33 @@
 
 async function refreshSignage() {
     try {
-        // Use a simple fetch without custom headers to avoid CORS preflight blocks
+        // We use a simple fetch here. Google Apps Script handles the rest.
         const response = await fetch(API_URL);
-
-        if (!response.ok) throw new Error("Sync failed");
+        
+        if (!response.ok) throw new Error("Sync Error: " + response.status);
         
         const data = await response.json();
 
-        // Populate your UI elements
+        // Populate Campus Updates
         const campusBox = document.querySelector('#campus-updates .content');
-        if (campusBox) campusBox.innerHTML = data.notices.map(n => `<div>▶ ${n}</div>`).join('');
+        if (campusBox && data.notices) {
+            campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
+        }
 
+        // Populate Student Highlights
         const highlightBox = document.querySelector('#student-highlights');
-        if (highlightBox) highlightBox.innerHTML = data.highlights.map(h => `<div>★ ${h}</div>`).join('');
+        if (highlightBox && data.highlights) {
+            highlightBox.innerHTML = data.highlights.map(h => `<div style="margin-bottom:8px;">★ ${h}</div>`).join('');
+        }
 
-        document.getElementById('marquee-text').innerText = data.bulletin || "Welcome";
-
-        // Reset Clock if it was stuck
-        runClock();
+        // Clear the Sync Error and show the Bulletin
+        document.getElementById('marquee-text').innerText = data.bulletin || "Welcome to Invictus";
 
     } catch (e) { 
-        document.getElementById('marquee-text').innerText = "Sync Error: Check API URL";
+        document.getElementById('marquee-text').innerText = "Sync Error: Failed to connect";
         console.error("Fetch Error:", e);
     }
 }
-
 
     function runClock() {
         const timeEl = document.getElementById('time');
