@@ -64,46 +64,29 @@
     const API_URL = "https://google.com";
     let slideshowInterval;
 
-   async function refreshSignage() {
+async function refreshSignage() {
     try {
-        const response = await fetch(API_URL, {
-            method: 'GET',
-            mode: 'cors',
-            cache: 'no-cache'
-        });
+        // Use a simple fetch without custom headers to avoid CORS preflight blocks
+        const response = await fetch(API_URL);
 
-        if (!response.ok) throw new Error("Server response failed");
+        if (!response.ok) throw new Error("Sync failed");
         
         const data = await response.json();
 
-        // 1. Update Notices
+        // Populate your UI elements
         const campusBox = document.querySelector('#campus-updates .content');
-        if (data.notices) {
-            campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
-        }
+        if (campusBox) campusBox.innerHTML = data.notices.map(n => `<div>▶ ${n}</div>`).join('');
 
-        // 2. Update Student Highlights (ADDED THIS PART)
         const highlightBox = document.querySelector('#student-highlights');
-        if (data.highlights) {
-            highlightBox.innerHTML = data.highlights.map(h => `<div style="margin-bottom:8px;">★ ${h}</div>`).join('');
-        }
+        if (highlightBox) highlightBox.innerHTML = data.highlights.map(h => `<div>★ ${h}</div>`).join('');
 
-        // 3. Update Bulletin (This also clears the "Sync Error" text)
-        document.getElementById('marquee-text').innerText = data.bulletin || "Welcome to Invictus";
+        document.getElementById('marquee-text').innerText = data.bulletin || "Welcome";
 
-        // 4. Slideshow Logic
-        if (data.images?.length > 0) {
-            const imgEl = document.getElementById('slideshow');
-            let idx = 0;
-            imgEl.src = data.images[0];
-            if(slideshowInterval) clearInterval(slideshowInterval);
-            slideshowInterval = setInterval(() => {
-                idx = (idx + 1) % data.images.length;
-                imgEl.src = data.images[idx];
-            }, 15000);
-        }
+        // Reset Clock if it was stuck
+        runClock();
+
     } catch (e) { 
-        document.getElementById('marquee-text').innerText = "Sync Error: " + e.message;
+        document.getElementById('marquee-text').innerText = "Sync Error: Check API URL";
         console.error("Fetch Error:", e);
     }
 }
