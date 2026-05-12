@@ -178,22 +178,7 @@ iframe, img {
 <body>
 
 <header>
-    <div style="display:flex; align-items:center; gap:20px;">
-
-        <!-- LOGO FROM GOOGLE DRIVE -->
-        <img id="school-logo"
-             src=""
-             style="height:80px; width:auto; object-fit:contain;">
-
-        <!-- SCHOOL NAME -->
-        <div class="school-name">
-            Invictus International School<br>
-            <span style="color: var(--gold); font-size: 3rem;">
-                Horizon Hills
-            </span>
-        </div>
-
-    </div>
+<div class="school-name">Invictus International School<br><span style="color: var(--gold); font-size: 3rem;">Horizon Hills</span></div>
     <div class="clock-container">
         <div id="time">00:00:00</div>
         <div id="date">LOADING...</div>
@@ -244,11 +229,6 @@ async function refreshSignage() {
     try {
         const res = await fetch(API_URL);
         const data = await res.json();
-
-
-        // LOGO FROM GOOGLE DRIVE
-        if (data.logo) {
-        document.getElementById("school-logo").src = data.logo;
             
         // SLIDESHOW
         if (data.images && data.images.length > 0) {
