@@ -63,72 +63,178 @@
     </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
-    let slideshowInterval;
+
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
+
+let slideshowInterval;
+
+let currentVideo = 0;
+let videoRotationInterval;
 
 async function refreshSignage() {
+
     try {
+
         const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Sync Error: " + response.status);
+
+        if (!response.ok)
+            throw new Error("Sync Error: " + response.status);
+
         const data = await response.json();
 
-        // 1. Campus Updates
-        const campusBox = document.querySelector('#campus-updates .content');
+        // =========================
+        // 1. CAMPUS UPDATES
+        // =========================
+
+        const campusBox =
+            document.querySelector('#campus-updates .content');
+
         if (campusBox && data.notices) {
-            campusBox.innerHTML = data.notices.map(n => `<div class="notice-item">▶ ${n}</div>`).join('');
+
+            campusBox.innerHTML =
+                data.notices
+                    .map(n =>
+                        `<div class="notice-item">▶ ${n}</div>`
+                    )
+                    .join('');
         }
 
-        // 2. Student Highlights
-        const highlightBox = document.querySelector('#student-highlights');
+        // =========================
+        // 2. STUDENT HIGHLIGHTS
+        // =========================
+
+        const highlightBox =
+            document.querySelector('#student-highlights');
+
         if (highlightBox && data.highlights) {
-            highlightBox.innerHTML = data.highlights.map(h => `<div style="margin-bottom:8px;">★ ${h}</div>`).join('');
+
+            highlightBox.innerHTML =
+                data.highlights
+                    .map(h =>
+                        `<div style="margin-bottom:8px;">★ ${h}</div>`
+                    )
+                    .join('');
         }
 
-        // 3. Slideshow
+        // =========================
+        // 3. IMAGE SLIDESHOW
+        // =========================
+
         if (data.images && data.images.length > 0) {
-            const imgEl = document.getElementById('slideshow');
+
+            const imgEl =
+                document.getElementById('slideshow');
+
             let idx = 0;
+
             imgEl.src = data.images[0];
-            if(slideshowInterval) clearInterval(slideshowInterval);
+
+            if (slideshowInterval)
+                clearInterval(slideshowInterval);
+
             slideshowInterval = setInterval(() => {
-                idx = (idx + 1) % data.images.length;
+
+                idx =
+                    (idx + 1) % data.images.length;
+
                 imgEl.src = data.images[idx];
+
             }, 10000);
         }
 
+        // =========================
+        // 4. YOUTUBE VIDEO ROTATION
+        // =========================
 
-                // 4. YouTube Video
-        if (data.videoId) {
+        if (data.videos && data.videos.length > 0) {
 
-            const yt = document.getElementById('yt-player');
+            const yt =
+                document.getElementById('yt-player');
 
-            yt.src = `https://www.youtube.com/embed/${data.videoId}?autoplay=1&mute=1&loop=1&playlist=${data.videoId}&controls=0&rel=0`;
+            function loadVideo(index) {
+
+                const videoId =
+                    data.videos[index];
+
+                yt.src =
+                    `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&rel=0`;
+            }
+
+            // LOAD FIRST VIDEO
+            loadVideo(currentVideo);
+
+            // CLEAR OLD ROTATION
+            if (videoRotationInterval)
+                clearInterval(videoRotationInterval);
+
+            // CHANGE VIDEO EVERY 60 SECONDS
+            videoRotationInterval =
+                setInterval(() => {
+
+                    currentVideo =
+                        (currentVideo + 1) %
+                        data.videos.length;
+
+                    loadVideo(currentVideo);
+
+                }, 60000);
         }
 
+        // =========================
+        // 5. BULLETIN
+        // =========================
 
-        // 5. Bulletin
-        document.getElementById('marquee-text').innerText = data.bulletin || "Welcome to Invictus";
+        document.getElementById('marquee-text').innerText =
+            data.bulletin ||
+            "Welcome to Invictus";
 
-    } catch (e) { 
-        document.getElementById('marquee-text').innerText = "Sync Error: Failed to connect";
+    } catch (e) {
+
+        document.getElementById('marquee-text').innerText =
+            "Sync Error: Failed to connect";
+
         console.error("Fetch Error:", e);
     }
 }
 
-    function runClock() {
-        const timeEl = document.getElementById('time');
-        const dateEl = document.getElementById('date');
-        if (timeEl && dateEl) {
-            const now = new Date();
-            timeEl.innerText = now.toLocaleTimeString();
-            dateEl.innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
-        }
-    }
+// =========================
+// CLOCK
+// =========================
 
-    runClock();
-    setInterval(runClock, 1000);
-    refreshSignage();
-    setInterval(refreshSignage, 300000); 
+function runClock() {
+
+    const timeEl =
+        document.getElementById('time');
+
+    const dateEl =
+        document.getElementById('date');
+
+    if (timeEl && dateEl) {
+
+        const now = new Date();
+
+        timeEl.innerText =
+            now.toLocaleTimeString();
+
+        dateEl.innerText =
+            now.toLocaleDateString(undefined, {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric'
+            });
+    }
+}
+
+runClock();
+
+setInterval(runClock, 1000);
+
+refreshSignage();
+
+// REFRESH GOOGLE SHEET DATA EVERY 5 MINUTES
+setInterval(refreshSignage, 300000);
+
 </script>
 </body>
 </html>
