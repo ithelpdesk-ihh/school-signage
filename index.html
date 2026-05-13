@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invictus Live Signage</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invictus Live Signage</title>
 
 <style>
 :root {
@@ -40,7 +40,6 @@ header {
     font-size: 1.9rem;
     font-weight: 900;
     text-transform: uppercase;
-    line-height: 1.2;
 }
 
 .clock-container {
@@ -50,16 +49,11 @@ header {
 #time {
     font-size: 4.2rem;
     font-weight: 800;
-    line-height: 1;
-    letter-spacing: 1px;
 }
 
 #date {
     color: var(--gold);
     font-size: 1.3rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    margin-top: 4px;
 }
 
 main {
@@ -68,15 +62,12 @@ main {
     grid-template-columns: 0.8fr 1.5fr;
     gap: 18px;
     padding: 18px;
-    box-sizing: border-box;
 }
 
 .card {
     background: var(--accent);
     border-radius: 18px;
     overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
 }
 
 .right-col {
@@ -88,7 +79,6 @@ main {
 .video-box {
     flex: 4;
     background: #000;
-    border-radius: 18px;
 }
 
 .bottom-split {
@@ -99,38 +89,27 @@ main {
 }
 
 .info-panel {
-    padding: 16px 18px;
-    background: #ffffff;
+    padding: 16px;
+    background: #fff;
     color: #1e293b;
     border-radius: 16px;
-    box-sizing: border-box;
-}
-
-.info-panel h2 {
-    margin: 0 0 8px;
-    font-size: 1.1rem;
-    color: var(--navy);
-    border-bottom: 2px solid #e5e7eb;
-    padding-bottom: 6px;
 }
 
 #news-bar {
     height: 8vh;
     background: var(--gold);
-    color: #000;
     display: flex;
     align-items: center;
+    color: #000;
 }
 
 .ticker-label {
     background: var(--navy);
     color: #fff;
     padding: 0 25px;
-    height: 100%;
+    font-weight: 900;
     display: flex;
     align-items: center;
-    font-size: 1.2rem;
-    font-weight: 900;
 }
 
 .marquee-container {
@@ -142,10 +121,8 @@ main {
     white-space: nowrap;
     font-size: 2rem;
     font-weight: 700;
-    display: inline-block;
     padding-left: 100%;
     animation: scroll 35s linear infinite;
-    line-height: 8vh;
 }
 
 @keyframes scroll {
@@ -166,133 +143,151 @@ iframe, img {
 
 <header>
 <div class="school-name">
-    Invictus International School<br>
-    <span style="color: var(--gold); font-size: 3rem;">Horizon Hills</span>
+Invictus International School<br>
+<span style="color: var(--gold); font-size: 3rem;">Horizon Hills</span>
 </div>
 
 <div class="clock-container">
-    <div id="time">00:00</div>
-    <div id="date">LOADING...</div>
+<div id="time">00:00</div>
+<div id="date">LOADING...</div>
 </div>
 </header>
 
 <main>
 
-    <div class="card poster-box">
-        <img id="slideshow" src="">
-    </div>
+<!-- IMAGE -->
+<div class="card">
+<img id="slideshow" src="">
+</div>
 
-    <div class="right-col">
+<!-- RIGHT SIDE -->
+<div class="right-col">
 
-        <div class="card video-box">
-            <iframe id="yt-player" src="" allow="autoplay" allowfullscreen></iframe>
-        </div>
+<!-- YOUTUBE -->
+<div class="card video-box">
+<iframe id="yt-player" allow="autoplay" allowfullscreen></iframe>
+</div>
 
-        <div class="bottom-split">
+<!-- TEXT -->
+<div class="bottom-split">
 
-            <div class="card info-panel" id="campus-updates" style="background: var(--gold); color: black;">
-                <h2>PRIMARY</h2>
-                <div class="content">Loading updates...</div>
-            </div>
+<div class="info-panel" style="background: var(--gold); color: black;">
+<h2>PRIMARY</h2>
+<div id="campus-updates">Loading...</div>
+</div>
 
-            <div class="card info-panel" style="background: var(--navy); color: white;">
-                <h2 style="color: var(--gold);">SECONDARY</h2>
-                <div id="student-highlights" class="content">Loading highlights...</div>
-            </div>
+<div class="info-panel" style="background: var(--navy); color: white;">
+<h2 style="color: var(--gold);">SECONDARY</h2>
+<div id="student-highlights">Loading...</div>
+</div>
 
-        </div>
-    </div>
+</div>
+</div>
+
 </main>
 
 <div id="news-bar">
-    <div class="ticker-label">BULLETIN</div>
-    <div class="marquee-container">
-        <div id="marquee-text" class="marquee">Connecting to Google...</div>
-    </div>
+<div class="ticker-label">BULLETIN</div>
+<div class="marquee-container">
+<div id="marquee-text" class="marquee">Loading...</div>
+</div>
 </div>
 
 <script>
 
 const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
 
+/* ===================== */
+/* CLOCK */
+/* ===================== */
+function clock() {
+    const now = new Date();
+    document.getElementById("time").innerText =
+        now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    document.getElementById("date").innerText = now.toDateString();
+}
+
+/* ===================== */
+/* IMAGE SYSTEM (5 MIN) */
+/* ===================== */
 let slideshowInterval;
-let videoLoaded = false; // ✅ IMPORTANT: OUTSIDE FUNCTION
 
-// =========================
-// STEP 1: TEXT + IMAGE REFRESH ONLY
-// =========================
-async function refreshSignage() {
+async function refreshImages() {
+    const res = await fetch(API_URL);
+    const data = await res.json();
 
-    try {
+    if (data.images && data.images.length > 0) {
 
-        const res = await fetch(API_URL);
-        const data = await res.json();
+        const img = document.getElementById("slideshow");
 
-        // SLIDESHOW
-        if (data.images && data.images.length > 0) {
+        let i = 0;
+        img.src = data.images[0];
 
-            const img = document.getElementById("slideshow");
+        if (slideshowInterval) clearInterval(slideshowInterval);
 
-            let i = 0;
-
-            img.src = data.images[0];
-
-            if (slideshowInterval)
-                clearInterval(slideshowInterval);
-
-            slideshowInterval = setInterval(() => {
-                i = (i + 1) % data.images.length;
-                img.src = data.images[i];
-            }, 10000);
-        }
-
-        // TEXT
-        document.getElementById("campus-updates").querySelector(".content").innerHTML =
-            (data.notices || []).map(n => `▶ ${n}`).join("<br>");
-
-        document.getElementById("student-highlights").innerHTML =
-            (data.highlights || []).map(h => `★ ${h}`).join("<br>");
-
-        document.getElementById("marquee-text").innerText =
-            data.bulletin || "Welcome";
-
-        // =========================
-        // STEP 2: YOUTUBE LOAD ONCE ONLY
-        // =========================
-        if (data.videos && data.videos.length > 0 && !videoLoaded) {
-
-            const player = document.getElementById("yt-player");
-
-            const playlist = data.videos.join(",");
-            const firstVideo = data.videos[0];
-
-            player.src =
-                `https://www.youtube.com/embed/${firstVideo}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&disablekb=1&loop=1&modestbranding=1&playlist=${playlist}`;
-
-            videoLoaded = true;
-        }
-
-    } catch (e) {
-        console.error(e);
+        slideshowInterval = setInterval(() => {
+            i = (i + 1) % data.images.length;
+            img.src = data.images[i];
+        }, 10000);
     }
 }
 
-// CLOCK
-function clock() {
-    const now = new Date();
+/* ===================== */
+/* TEXT SYSTEM (20 SEC) */
+/* ===================== */
+async function refreshText() {
+    const res = await fetch(API_URL);
+    const data = await res.json();
 
-    document.getElementById('time').innerText =
-        now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    document.getElementById("campus-updates").innerHTML =
+        (data.notices || []).map(n => `▶ ${n}`).join("<br>");
 
-    document.getElementById('date').innerText =
-        now.toDateString();
+    document.getElementById("student-highlights").innerHTML =
+        (data.highlights || []).map(h => `★ ${h}`).join("<br>");
+
+    document.getElementById("marquee-text").innerText =
+        data.bulletin || "Welcome";
 }
 
-// START
-setInterval(clock, 1000);
+/* ===================== */
+/* YOUTUBE (ONCE ONLY) */
+/* ===================== */
+let videoLoaded = false;
+
+async function loadYouTube() {
+    if (videoLoaded) return;
+
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    if (data.videos && data.videos.length > 0) {
+
+        const player = document.getElementById("yt-player");
+
+        const playlist = data.videos.join(",");
+        const first = data.videos[0];
+
+        player.src =
+        `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
+
+        videoLoaded = true;
+    }
+}
+
+/* ===================== */
+/* START EVERYTHING */
+/* ===================== */
+
 clock();
-refreshSignage();
-setInterval(refreshSignage, 10000);
+setInterval(clock, 1000);
+
+refreshText();
+refreshImages();
+loadYouTube();
+
+/* intervals */
+setInterval(refreshText, 20000);     // 20 sec
+setInterval(refreshImages, 300000);   // 5 min
 
 </script>
 
