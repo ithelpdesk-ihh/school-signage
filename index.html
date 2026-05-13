@@ -310,7 +310,11 @@ function playCurrentVideo() {
 
     if (!playlist.length) return;
 
-    player.loadVideoById(playlist[currentVideo]);
+    player.cueVideoById(playlist[currentVideo]);
+
+setTimeout(() => {
+    player.playVideo();
+}, 1000);
 }
 
 // =========================
