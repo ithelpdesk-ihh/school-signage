@@ -21,13 +21,12 @@
 
 body, html {
     margin: 0;
-    padding: 0;
     height: 100%;
     width: 100%;
     overflow: hidden;
     background: var(--bg-dark);
-    color: var(--text-light);
-    font-family: "Segoe UI", sans-serif;
+    font-family: Arial, sans-serif;
+    color: white;
 }
 
 /* HEADER */
@@ -37,115 +36,101 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 30px;
-    border-bottom: 5px solid var(--gold);
+    padding: 0 25px;
+    border-bottom: 4px solid var(--gold);
 }
 
 .school-name {
-    font-size: 1.7rem;
     font-weight: 900;
-}
-
-.clock-container {
-    text-align: right;
+    font-size: 1.6rem;
 }
 
 #time {
-    font-size: 3.5rem;
-    font-weight: 800;
+    font-size: 3rem;
+    font-weight: bold;
 }
 
 #date {
     color: var(--gold);
-    font-size: 1.1rem;
 }
 
-/* MAIN LAYOUT */
+/* MAIN */
 main {
     height: 78vh;
     display: grid;
     grid-template-columns: 1fr 1.6fr;
-    gap: 15px;
-    padding: 15px;
+    gap: 12px;
+    padding: 12px;
 }
 
-/* CARD FIX */
+/* CARD */
 .card {
     background: var(--accent);
-    border-radius: 16px;
+    border-radius: 14px;
     overflow: hidden;
-    min-height: 0;
 }
 
-/* IMAGE FADE FIX ⭐ */
+/* 🔥 IMAGE ZOOM EFFECT */
 #slideshow {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: opacity 1.5s ease-in-out;
-    opacity: 1;
+    transform: scale(1);
+    transition: transform 10s ease-in-out;
 }
 
-/* RIGHT COLUMN */
-.right-col {
+/* RIGHT SIDE */
+.right {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    height: 100%;
+    gap: 12px;
 }
 
 /* VIDEO */
-.video-box {
+.video {
     flex: 3;
-    background: #000;
+    background: black;
 }
 
-/* BOTTOM TEXT */
-.bottom-split {
+/* TEXT BOX */
+.bottom {
     flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    gap: 12px;
 }
 
-/* INFO PANEL */
-.info-panel {
-    padding: 12px;
-    background: #fff;
-    color: #1e293b;
+.box {
+    background: white;
+    color: black;
+    padding: 10px;
     border-radius: 12px;
 }
 
-/* NEWS BAR */
+/* BULLETIN */
 #news-bar {
     height: 8vh;
     background: var(--gold);
     display: flex;
     align-items: center;
-    color: #000;
+    color: black;
 }
 
-.ticker-label {
+.label {
     background: var(--navy);
-    color: #fff;
-    padding: 0 25px;
-    font-weight: 900;
-    font-size: 2rem;
-    display: flex;
-    align-items: center;
-}
-
-.marquee-container {
-    flex: 1;
-    overflow: hidden;
+    color: white;
+    padding: 0 20px;
+    font-weight: bold;
 }
 
 .marquee {
+    flex: 1;
+    overflow: hidden;
     white-space: nowrap;
-    font-size: 1.7rem;
-    font-weight: 700;
+    font-size: 1.6rem;
+    font-weight: bold;
     padding-left: 100%;
-    animation: scroll 35s linear infinite;
+    animation: scroll 30s linear infinite;
 }
 
 @keyframes scroll {
@@ -154,7 +139,7 @@ main {
 }
 
 /* MEDIA */
-iframe, img {
+img, iframe {
     width: 100%;
     height: 100%;
     border: none;
@@ -168,41 +153,41 @@ iframe, img {
 <header>
 <div class="school-name">
 Invictus International School<br>
-<span style="color: var(--gold); font-size: 2.5rem;">Horizon Hills</span>
+<span style="color: var(--gold)">Horizon Hills</span>
 </div>
 
-<div class="clock-container">
+<div>
 <div id="time">00:00</div>
-<div id="date">LOADING...</div>
+<div id="date">Loading...</div>
 </div>
 </header>
 
 <main>
 
 <!-- IMAGE -->
-<div class="card poster-box">
-<img id="slideshow" src="">
+<div class="card">
+<img id="slideshow">
 </div>
 
-<!-- RIGHT SIDE -->
-<div class="right-col">
+<!-- RIGHT -->
+<div class="right">
 
-<!-- YOUTUBE -->
-<div class="card video-box">
-<iframe id="yt-player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<!-- VIDEO -->
+<div class="card video">
+<iframe id="yt-player" allow="autoplay; encrypted-media"></iframe>
 </div>
 
 <!-- TEXT -->
-<div class="bottom-split">
+<div class="bottom">
 
-<div class="info-panel" style="background: var(--gold); color: black;">
-<h2>PRIMARY</h2>
-<div id="campus-updates">Loading...</div>
+<div class="box" style="background: var(--gold)">
+<h3>PRIMARY</h3>
+<div id="campus-updates"></div>
 </div>
 
-<div class="info-panel" style="background: var(--navy); color: white;">
-<h2 style="color: var(--gold);">SECONDARY</h2>
-<div id="student-highlights">Loading...</div>
+<div class="box" style="background: var(--navy); color:white">
+<h3 style="color: var(--gold)">SECONDARY</h3>
+<div id="student-highlights"></div>
 </div>
 
 </div>
@@ -210,11 +195,10 @@ Invictus International School<br>
 
 </main>
 
+<!-- BULLETIN -->
 <div id="news-bar">
-<div class="ticker-label">BULLETIN</div>
-<div class="marquee-container">
-<div id="marquee-text" class="marquee">Loading...</div>
-</div>
+<div class="label">BULLETIN</div>
+<div class="marquee" id="marquee-text">Loading...</div>
 </div>
 
 <script>
@@ -229,85 +213,73 @@ function clock() {
     document.getElementById("date").innerText = now.toDateString();
 }
 
-/* IMAGE SYSTEM (FADE VERSION) ⭐ */
-let slideshowInterval;
+/* IMAGE ZOOM SLIDESHOW */
+let i = 0;
 
-async function refreshImages() {
-    try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
+async function loadImages() {
+    const res = await fetch(API_URL);
+    const data = await res.json();
 
-        if (data.images?.length) {
-            const img = document.getElementById("slideshow");
+    if (!data.images || data.images.length === 0) return;
 
-            let i = 0;
-            img.src = data.images[0];
+    const img = document.getElementById("slideshow");
 
-            clearInterval(slideshowInterval);
+    img.src = data.images[0];
 
-            slideshowInterval = setInterval(() => {
+    setInterval(() => {
 
-                // FADE OUT
-                img.style.opacity = 0;
+        // reset zoom
+        img.style.transform = "scale(1)";
 
-                setTimeout(() => {
-                    i = (i + 1) % data.images.length;
-                    img.src = data.images[i];
+        setTimeout(() => {
+            i = (i + 1) % data.images.length;
+            img.src = data.images[i];
 
-                    // FADE IN
-                    img.style.opacity = 1;
-                }, 500);
+            // zoom in
+            setTimeout(() => {
+                img.style.transform = "scale(1.1)";
+            }, 50);
 
-            }, 5000);
-        }
-    } catch (e) {
-        console.log("Image load error", e);
-    }
+        }, 500);
+
+    }, 8000);
 }
 
-/* TEXT SYSTEM */
-async function refreshText() {
-    try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
+/* TEXT */
+async function loadText() {
+    const res = await fetch(API_URL);
+    const data = await res.json();
 
-        document.getElementById("campus-updates").innerHTML =
-            (data.notices || ["No updates"]).map(n => `▶ ${n}`).join("<br>");
+    document.getElementById("campus-updates").innerHTML =
+        (data.notices || []).join("<br>");
 
-        document.getElementById("student-highlights").innerHTML =
-            (data.highlights || ["No highlights"]).map(h => `★ ${h}`).join("<br>");
+    document.getElementById("student-highlights").innerHTML =
+        (data.highlights || []).join("<br>");
 
-        document.getElementById("marquee-text").innerText =
-            data.bulletin || "Welcome";
-    } catch (e) {
-        console.log("Text load error", e);
-    }
+    document.getElementById("marquee-text").innerText =
+        data.bulletin || "Welcome";
 }
 
-/* YOUTUBE ONCE ONLY */
+/* YOUTUBE ONCE */
 let videoLoaded = false;
 
 async function loadYouTube() {
-    try {
-        if (videoLoaded) return;
+    if (videoLoaded) return;
 
-        const res = await fetch(API_URL);
-        const data = await res.json();
+    const res = await fetch(API_URL);
+    const data = await res.json();
 
-        if (data.videos?.length) {
+    if (data.videos?.length) {
 
-            const player = document.getElementById("yt-player");
+        const player = document.getElementById("yt-player");
 
-            const playlist = data.videos.join(",");
-            const first = data.videos[0];
+        const playlist = data.videos.join(",");
+        const first = data.videos[0];
 
-            player.src =
-            `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
+        player.src =
+        `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&loop=1&playlist=${playlist}`;
 
-            videoLoaded = true;
-        }
-    } catch (e) {
-        console.log("YouTube load error", e);
+        videoLoaded = true;
     }
 }
 
@@ -315,13 +287,11 @@ async function loadYouTube() {
 clock();
 setInterval(clock, 1000);
 
-refreshText();
-refreshImages();
+loadImages();
+loadText();
 loadYouTube();
 
-/* INTERVALS */
-setInterval(refreshText, 20000);
-setInterval(refreshImages, 300000);
+setInterval(loadText, 20000);
 
 </script>
 
