@@ -195,7 +195,7 @@ iframe, img {
     <div class="card video-box">
         <iframe id="yt-player"
         src=""
-        allow="autoplay; encrypted-media"
+        allow="autoplay"
         allowfullscreen>
         </iframe>
     </div>
@@ -257,20 +257,31 @@ async function refreshSignage() {
 let videoTimer;
 
 // =========================
-// YOUTUBE ROTATION
+// YOUTUBE PLAYLIST
 // =========================
-function loadVideo(id) {
+
+if (data.videos && data.videos.length > 0) {
 
     const player = document.getElementById("yt-player");
 
-    player.src =
-      `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&disablekb=1`;
-}
+    // convert array into playlist
+    const playlist = data.videos.join(",");
 
-if (data.videos && data.videos.length > 0) {
-    currentVideo = 0;
-    loadVideo(data.videos[currentVideo]);
-}
+    // first video
+    const firstVideo = data.videos[0];
+
+    player.src =
+      `https://www.youtube.com/embed/${firstVideo}
+      ?autoplay=1
+      &mute=1
+      &controls=0
+      &rel=0
+      &playsinline=1
+      &disablekb=1
+      &loop=1
+      &playlist=${playlist}`;
+
+    }
 
     } catch (e) {
         console.error(e);
