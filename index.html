@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invictus Live Signage</title>
+
 <style>
 :root {
     --navy: #0f172a;
@@ -13,7 +14,6 @@
     --bg-dark: #020617;
 }
 
-/* GLOBAL */
 body, html {
     margin: 0;
     padding: 0;
@@ -25,7 +25,6 @@ body, html {
     font-family: "Segoe UI", sans-serif;
 }
 
-/* HEADER */
 header {
     height: 16vh;
     background: var(--navy);
@@ -37,7 +36,6 @@ header {
     box-sizing: border-box;
 }
 
-/* SCHOOL NAME */
 .school-name {
     font-size: 1.9rem;
     font-weight: 900;
@@ -45,29 +43,25 @@ header {
     line-height: 1.2;
 }
 
-/* CLOCK CONTAINER */
 .clock-container {
     text-align: right;
 }
 
-/* SMALLER CLOCK (FIXED) */
 #time {
-    font-size: 4.2rem;   /* ⬅ reduced from 7rem */
+    font-size: 4.2rem;
     font-weight: 800;
     line-height: 1;
     letter-spacing: 1px;
 }
 
-/* DATE */
 #date {
     color: var(--gold);
-    font-size: 1.3rem;   /* ⬅ smaller */
+    font-size: 1.3rem;
     font-weight: 600;
     text-transform: uppercase;
     margin-top: 4px;
 }
 
-/* MAIN LAYOUT */
 main {
     height: 76vh;
     display: grid;
@@ -77,7 +71,6 @@ main {
     box-sizing: border-box;
 }
 
-/* CARDS */
 .card {
     background: var(--accent);
     border-radius: 18px;
@@ -86,21 +79,18 @@ main {
     box-shadow: 0 6px 18px rgba(0,0,0,0.25);
 }
 
-/* RIGHT COLUMN */
 .right-col {
     display: flex;
     flex-direction: column;
     gap: 18px;
 }
 
-/* VIDEO */
 .video-box {
     flex: 4;
     background: #000;
     border-radius: 18px;
 }
 
-/* BOTTOM PANELS */
 .bottom-split {
     flex: 1.2;
     display: grid;
@@ -108,7 +98,6 @@ main {
     gap: 18px;
 }
 
-/* INFO PANELS */
 .info-panel {
     padding: 16px 18px;
     background: #ffffff;
@@ -125,7 +114,6 @@ main {
     padding-bottom: 6px;
 }
 
-/* BOTTOM NEWS BAR */
 #news-bar {
     height: 8vh;
     background: var(--gold);
@@ -165,7 +153,6 @@ main {
     to { transform: translateX(-100%); }
 }
 
-/* MEDIA */
 iframe, img {
     width: 100%;
     height: 100%;
@@ -178,29 +165,31 @@ iframe, img {
 <body>
 
 <header>
-<div class="school-name">Invictus International School<br><span style="color: var(--gold); font-size: 3rem;">Horizon Hills</span></div>
-    <div class="clock-container">
-        <div id="time">00:00</div>
-        <div id="date">LOADING...</div>
-    </div>
+<div class="school-name">
+    Invictus International School<br>
+    <span style="color: var(--gold); font-size: 3rem;">Horizon Hills</span>
+</div>
+
+<div class="clock-container">
+    <div id="time">00:00</div>
+    <div id="date">LOADING...</div>
+</div>
 </header>
 
 <main>
+
     <div class="card poster-box">
         <img id="slideshow" src="">
     </div>
 
     <div class="right-col">
-        <!-- ✅ YOUTUBE PLAYER -->
-    <div class="card video-box">
-        <iframe id="yt-player"
-        src=""
-        allow="autoplay"
-        allowfullscreen>
-        </iframe>
-    </div>
+
+        <div class="card video-box">
+            <iframe id="yt-player" src="" allow="autoplay" allowfullscreen></iframe>
+        </div>
 
         <div class="bottom-split">
+
             <div class="card info-panel" id="campus-updates" style="background: var(--gold); color: black;">
                 <h2>PRIMARY</h2>
                 <div class="content">Loading updates...</div>
@@ -210,7 +199,7 @@ iframe, img {
                 <h2 style="color: var(--gold);">SECONDARY</h2>
                 <div id="student-highlights" class="content">Loading highlights...</div>
             </div>
-            
+
         </div>
     </div>
 </main>
@@ -223,83 +212,89 @@ iframe, img {
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
-let slideshowInterval;
 
+const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
+
+let slideshowInterval;
+let videoLoaded = false; // ✅ IMPORTANT: OUTSIDE FUNCTION
+
+// =========================
+// STEP 1: TEXT + IMAGE REFRESH ONLY
+// =========================
 async function refreshSignage() {
+
     try {
+
         const res = await fetch(API_URL);
         const data = await res.json();
-            
+
         // SLIDESHOW
         if (data.images && data.images.length > 0) {
+
             const img = document.getElementById("slideshow");
+
             let i = 0;
+
             img.src = data.images[0];
-            if (slideshowInterval) clearInterval(slideshowInterval);
+
+            if (slideshowInterval)
+                clearInterval(slideshowInterval);
+
             slideshowInterval = setInterval(() => {
                 i = (i + 1) % data.images.length;
                 img.src = data.images[i];
             }, 10000);
         }
 
-        // TEXT CONTENT
-        const campusContent = document.getElementById("campus-updates").querySelector(".content");
-        campusContent.innerHTML = (data.notices || []).map(n => `▶ ${n}`).join("<br>");
+        // TEXT
+        document.getElementById("campus-updates").querySelector(".content").innerHTML =
+            (data.notices || []).map(n => `▶ ${n}`).join("<br>");
 
-        const highlightContent = document.getElementById("student-highlights");
-        highlightContent.innerHTML = (data.highlights || []).map(h => `★ ${h}`).join("<br>");
+        document.getElementById("student-highlights").innerHTML =
+            (data.highlights || []).map(h => `★ ${h}`).join("<br>");
 
-        document.getElementById("marquee-text").innerText = data.bulletin || "Welcome";
+        document.getElementById("marquee-text").innerText =
+            data.bulletin || "Welcome";
 
-        // ✅ YOUTUBE LOGIC
-        
+        // =========================
+        // STEP 2: YOUTUBE LOAD ONCE ONLY
+        // =========================
+        if (data.videos && data.videos.length > 0 && !videoLoaded) {
 
-        let videoLoaded = false;
+            const player = document.getElementById("yt-player");
 
-// =========================
-// YOUTUBE PLAYLIST
-// =========================
+            const playlist = data.videos.join(",");
+            const firstVideo = data.videos[0];
 
-if (data.videos && data.videos.length > 0 && !videoLoaded) {
+            player.src =
+                `https://www.youtube.com/embed/${firstVideo}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&disablekb=1&loop=1&modestbranding=1&playlist=${playlist}`;
 
-    const player = document.getElementById("yt-player");
-
-    const playlist = data.videos.join(",");
-
-    const firstVideo = data.videos[0];
-
-    player.src = `https://www.youtube.com/embed/${firstVideo}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&disablekb=1&loop=1&modestbranding=1&playlist=${playlist}`;
-
-    videoLoaded = true;
-}
+            videoLoaded = true;
+        }
 
     } catch (e) {
         console.error(e);
     }
 }
 
+// CLOCK
 function clock() {
     const now = new Date();
 
     document.getElementById('time').innerText =
-        now.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     document.getElementById('date').innerText =
         now.toDateString();
 }
 
+// START
 setInterval(clock, 1000);
 clock();
 refreshSignage();
 setInterval(refreshSignage, 300000);
+
 </script>
 
 </body>
 </html>
-
-
-put into my code without disturbing other codes
