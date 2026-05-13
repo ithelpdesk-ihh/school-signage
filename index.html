@@ -157,7 +157,7 @@ Invictus International School<br>
 
 <!-- IMAGE -->
 <div class="card">
-<img id="slideshow" src="">
+<img id="slideshow">
 </div>
 
 <!-- RIGHT SIDE -->
@@ -173,12 +173,12 @@ Invictus International School<br>
 
 <div class="info-panel" style="background: var(--gold); color: black;">
 <h2>PRIMARY</h2>
-<div id="campus-updates">Loading...</div>
+<div id="campus-updates"></div>
 </div>
 
 <div class="info-panel" style="background: var(--navy); color: white;">
 <h2 style="color: var(--gold);">SECONDARY</h2>
-<div id="student-highlights">Loading...</div>
+<div id="student-highlights"></div>
 </div>
 
 </div>
@@ -197,9 +197,7 @@ Invictus International School<br>
 
 const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
 
-/* ===================== */
-/* CLOCK */
-/* ===================== */
+/* ================= CLOCK ================= */
 function clock() {
     const now = new Date();
     document.getElementById("time").innerText =
@@ -207,23 +205,20 @@ function clock() {
     document.getElementById("date").innerText = now.toDateString();
 }
 
-/* ===================== */
-/* IMAGE SYSTEM (5 MIN) */
-/* ===================== */
+/* ================= IMAGE (5 MIN) ================= */
 let slideshowInterval;
 
 async function refreshImages() {
     const res = await fetch(API_URL);
     const data = await res.json();
 
-    if (data.images && data.images.length > 0) {
-
+    if (data.images?.length) {
         const img = document.getElementById("slideshow");
 
         let i = 0;
         img.src = data.images[0];
 
-        if (slideshowInterval) clearInterval(slideshowInterval);
+        clearInterval(slideshowInterval);
 
         slideshowInterval = setInterval(() => {
             i = (i + 1) % data.images.length;
@@ -232,9 +227,7 @@ async function refreshImages() {
     }
 }
 
-/* ===================== */
-/* TEXT SYSTEM (20 SEC) */
-/* ===================== */
+/* ================= TEXT (20 SEC) ================= */
 async function refreshText() {
     const res = await fetch(API_URL);
     const data = await res.json();
@@ -249,9 +242,7 @@ async function refreshText() {
         data.bulletin || "Welcome";
 }
 
-/* ===================== */
-/* YOUTUBE (ONCE ONLY) */
-/* ===================== */
+/* ================= YOUTUBE (ONCE ONLY) ================= */
 let videoLoaded = false;
 
 async function loadYouTube() {
@@ -260,7 +251,7 @@ async function loadYouTube() {
     const res = await fetch(API_URL);
     const data = await res.json();
 
-    if (data.videos && data.videos.length > 0) {
+    if (data.videos?.length) {
 
         const player = document.getElementById("yt-player");
 
@@ -274,20 +265,19 @@ async function loadYouTube() {
     }
 }
 
-/* ===================== */
-/* START EVERYTHING */
-/* ===================== */
+/* ================= START ================= */
 
 clock();
 setInterval(clock, 1000);
 
+/* initial load */
 refreshText();
 refreshImages();
 loadYouTube();
 
 /* intervals */
-setInterval(refreshText, 20000);     // 20 sec
-setInterval(refreshImages, 300000);   // 5 min
+setInterval(refreshText, 20000);     // TEXT
+setInterval(refreshImages, 300000);  // IMAGE
 
 </script>
 
