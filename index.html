@@ -252,7 +252,7 @@ async function refreshImages() {
             slideshowInterval = setInterval(() => {
                 i = (i + 1) % data.images.length;
                 img.src = data.images[i];
-            }, 10000);
+            }, 3000);
         }
     } catch (e) {
         console.log("Image load error", e);
