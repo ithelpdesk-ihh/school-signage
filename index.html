@@ -74,7 +74,6 @@ main {
     background: var(--accent);
     border-radius: 16px;
     overflow: hidden;
-    min-height: 0;
 }
 
 /* IMAGE */
@@ -89,7 +88,6 @@ main {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    height: 100%;
 }
 
 /* VIDEO */
@@ -98,7 +96,7 @@ main {
     background: #000;
 }
 
-/* BOTTOM TEXT */
+/* BOTTOM SPLIT */
 .bottom-split {
     flex: 1;
     display: grid;
@@ -106,17 +104,27 @@ main {
     gap: 15px;
 }
 
-/* INFO PANEL (IMPROVED) */
+/* ✅ INFO PANEL (FIXED COLORS) */
 .info-panel {
     display: flex;
     flex-direction: column;
-    background: #fff;
-    color: #1e293b;
     border-radius: 12px;
     overflow: hidden;
 }
 
-/* HEADER AREA */
+/* PRIMARY (GOLD STYLE) */
+.info-panel.primary {
+    background: var(--gold);
+    color: #000;
+}
+
+/* SECONDARY (NAVY STYLE) */
+.info-panel.secondary {
+    background: var(--navy);
+    color: var(--text-light);
+}
+
+/* HEADER */
 .info-panel h2 {
     margin: 0;
     padding: 10px 12px;
@@ -124,19 +132,18 @@ main {
     font-weight: 900;
 }
 
-/* BLACK LINE DIVIDER ⭐ */
+/* BLACK LINE */
 .panel-divider {
     height: 3px;
     background: #000;
     width: 100%;
 }
 
-/* CONTENT AREA */
+/* CONTENT */
 .panel-content {
     padding: 10px 12px;
     font-size: 0.95rem;
     line-height: 1.4;
-    overflow: hidden;
 }
 
 /* NEWS BAR */
@@ -176,7 +183,6 @@ main {
     to { transform: translateX(-100%); }
 }
 
-/* MEDIA */
 iframe, img {
     width: 100%;
     height: 100%;
@@ -219,14 +225,14 @@ Invictus International School<br>
 <div class="bottom-split">
 
 <!-- PRIMARY -->
-<div class="info-panel">
+<div class="info-panel primary">
 <h2>PRIMARY</h2>
 <div class="panel-divider"></div>
 <div id="campus-updates" class="panel-content">Loading...</div>
 </div>
 
 <!-- SECONDARY -->
-<div class="info-panel">
+<div class="info-panel secondary">
 <h2>SECONDARY</h2>
 <div class="panel-divider"></div>
 <div id="student-highlights" class="panel-content">Loading...</div>
