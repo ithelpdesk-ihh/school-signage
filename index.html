@@ -69,7 +69,6 @@ main {
     padding: 15px;
 }
 
-/* CARD FIX (IMPORTANT FOR NO BLACK SCREEN) */
 .card {
     background: var(--accent);
     border-radius: 16px;
@@ -77,12 +76,8 @@ main {
     min-height: 0;
 }
 
-/* LEFT IMAGE */
-.poster-box {
-    min-height: 0;
-}
+.poster-box { min-height: 0; }
 
-/* RIGHT COLUMN */
 .right-col {
     display: flex;
     flex-direction: column;
@@ -91,14 +86,12 @@ main {
     min-height: 0;
 }
 
-/* VIDEO */
 .video-box {
     flex: 3;
     background: #000;
     min-height: 0;
 }
 
-/* BOTTOM TEXT */
 .bottom-split {
     flex: 1;
     display: grid;
@@ -107,18 +100,38 @@ main {
     min-height: 0;
 }
 
-/* INFO PANEL */
+/* INFO PANELS */
 .info-panel {
+    position: relative;
     padding: 12px;
-    background: #fff;
-    color: #1e293b;
     border-radius: 12px;
     overflow: hidden;
 }
 
 .info-panel h2 {
-    margin: 0 0 6px;
+    margin: 0 0 8px;
     font-size: 1rem;
+}
+
+/* SCROLL SYSTEM */
+.scroll-container {
+    position: relative;
+    height: calc(100% - 25px);
+    overflow: hidden;
+}
+
+.scroll-content {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    animation: scrollUp 12s linear infinite;
+}
+
+@keyframes scrollUp {
+    0% { transform: translateY(100%); }
+    100% { transform: translateY(-100%); }
 }
 
 /* NEWS BAR */
@@ -200,14 +213,20 @@ Invictus International School<br>
 <!-- TEXT -->
 <div class="bottom-split">
 
-<div class="info-panel" style="background: var(--gold); color: black;">
-<h2>PRIMARY</h2>
-<div id="campus-updates">Loading...</div>
-</div>
-
+<!-- SECONDARY (NAVY) -->
 <div class="info-panel" style="background: var(--navy); color: white;">
 <h2 style="color: var(--gold);">SECONDARY</h2>
-<div id="student-highlights">Loading...</div>
+<div class="scroll-container">
+<div id="student-highlights" class="scroll-content">Loading...</div>
+</div>
+</div>
+
+<!-- PRIMARY (GOLD) -->
+<div class="info-panel" style="background: var(--gold); color: black;">
+<h2>PRIMARY</h2>
+<div class="scroll-container">
+<div id="campus-updates" class="scroll-content">Loading...</div>
+</div>
 </div>
 
 </div>
@@ -260,26 +279,31 @@ async function refreshImages() {
     }
 }
 
-/* TEXT SYSTEM */
+/* TEXT SYSTEM (UPDATED FOR SCROLL) */
 async function refreshText() {
     try {
         const res = await fetch(API_URL);
         const data = await res.json();
 
         document.getElementById("campus-updates").innerHTML =
-            (data.notices || ["No updates"]).map(n => `▶ ${n}`).join("<br>");
+            (data.notices || ["No updates"])
+            .map(n => `<div>▶ ${n}</div>`)
+            .join("");
 
         document.getElementById("student-highlights").innerHTML =
-            (data.highlights || ["No highlights"]).map(h => `★ ${h}`).join("<br>");
+            (data.highlights || ["No highlights"])
+            .map(h => `<div>★ ${h}</div>`)
+            .join("");
 
         document.getElementById("marquee-text").innerText =
             data.bulletin || "Welcome";
+
     } catch (e) {
         console.log("Text load error", e);
     }
 }
 
-/* YOUTUBE ONCE ONLY */
+/* YOUTUBE */
 let videoLoaded = false;
 
 async function loadYouTube() {
