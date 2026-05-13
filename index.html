@@ -98,6 +98,10 @@ main {
     grid-template-columns: 1fr 1fr;
     gap: 15px;
     min-height: 0;
+
+    /* BLACK LINE ABOVE PANELS */
+    border-top: 3px solid #000;
+    padding-top: 10px;
 }
 
 /* INFO PANELS */
@@ -106,11 +110,22 @@ main {
     padding: 12px;
     border-radius: 12px;
     overflow: hidden;
+    color: #fff;
 }
 
 .info-panel h2 {
     margin: 0 0 8px;
     font-size: 1rem;
+}
+
+/* PRIMARY (LEFT) - NAVY + GOLD ACCENT */
+.primary-panel {
+    background: linear-gradient(135deg, var(--navy) 80%, var(--gold) 20%);
+}
+
+/* SECONDARY (RIGHT) - GOLD + NAVY ACCENT */
+.secondary-panel {
+    background: linear-gradient(135deg, var(--gold) 80%, var(--navy) 20%);
 }
 
 /* SCROLL SYSTEM */
@@ -134,7 +149,7 @@ main {
     100% { transform: translateY(-100%); }
 }
 
-/* BULLETIN (FIXED MARQUEE) */
+/* BULLETIN (FIXED) */
 #news-bar {
     height: 8vh;
     background: var(--gold);
@@ -212,20 +227,22 @@ Invictus International School<br>
 <iframe id="yt-player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 </div>
 
-<!-- TEXT -->
+<!-- PANELS -->
 <div class="bottom-split">
 
-<div class="info-panel" style="background: var(--navy); color: white;">
-<h2 style="color: var(--gold);">SECONDARY</h2>
-<div class="scroll-container">
-<div id="student-highlights" class="scroll-content">Loading...</div>
-</div>
-</div>
-
-<div class="info-panel" style="background: var(--gold); color: black;">
+<!-- PRIMARY LEFT -->
+<div class="info-panel primary-panel">
 <h2>PRIMARY</h2>
 <div class="scroll-container">
 <div id="campus-updates" class="scroll-content">Loading...</div>
+</div>
+</div>
+
+<!-- SECONDARY RIGHT -->
+<div class="info-panel secondary-panel">
+<h2>SECONDARY</h2>
+<div class="scroll-container">
+<div id="student-highlights" class="scroll-content">Loading...</div>
 </div>
 </div>
 
@@ -254,7 +271,7 @@ function clock() {
     document.getElementById("date").innerText = now.toDateString();
 }
 
-/* IMAGE SYSTEM */
+/* IMAGE */
 let slideshowInterval;
 
 async function refreshImages() {
@@ -276,11 +293,11 @@ async function refreshImages() {
             }, 5000);
         }
     } catch (e) {
-        console.log("Image load error", e);
+        console.log("Image error", e);
     }
 }
 
-/* TEXT SYSTEM */
+/* TEXT */
 async function refreshText() {
     try {
         const res = await fetch(API_URL);
@@ -296,18 +313,17 @@ async function refreshText() {
             .map(h => `<div>★ ${h}</div>`)
             .join("");
 
-        /* BULLETIN FIXED DYNAMIC SCROLL */
+        /* BULLETIN FIX */
         const el = document.getElementById("marquee-text");
         const text = data.bulletin || "Welcome";
 
         el.innerText = text;
 
-        // dynamic speed (IMPORTANT FIX)
         const speed = Math.max(12, text.length * 0.3);
         el.style.animationDuration = speed + "s";
 
     } catch (e) {
-        console.log("Text load error", e);
+        console.log("Text error", e);
     }
 }
 
@@ -334,7 +350,7 @@ async function loadYouTube() {
             videoLoaded = true;
         }
     } catch (e) {
-        console.log("YouTube load error", e);
+        console.log("YouTube error", e);
     }
 }
 
