@@ -34,6 +34,8 @@ header {
     background: var(--navy);
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
 }
 
 /* MAIN */
@@ -66,34 +68,33 @@ main {
     height: 100%;
 }
 
-/* 🔥 REDUCED YOUTUBE HEIGHT */
+/* ✅ SMALLER YOUTUBE (FIXED HEIGHT) */
 .video-box {
-    flex: 2; /* was 3 → now smaller */
+    flex: 0 0 28%;
     background: black;
     border-radius: 16px;
     overflow: hidden;
 }
 
-/* BOTTOM */
+/* TEXT AREA BIGGER */
 .bottom-split {
-    flex: 2; /* give more space to text panels */
+    flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
 }
 
-/* INFO PANEL */
+/* INFO BOX */
 .info-panel {
     display: flex;
     flex-direction: column;
     border-radius: 12px;
     overflow: hidden;
-    height: 100%;
 }
 
 /* HEADER */
 .panel-header {
-    padding: 10px 12px;
+    padding: 10px;
     font-weight: 900;
 }
 
@@ -103,56 +104,55 @@ main {
     background: black;
 }
 
-/* CONTENT */
+/* CONTENT AREA (REAL SCROLL) */
 .panel-content {
-    padding: 10px 12px;
-    font-size: 0.95rem;
-    line-height: 1.4;
-
+    flex: 1;
     overflow: hidden;
     position: relative;
+    padding: 10px;
 }
 
-/* =========================
-   AUTO SCROLL TEXT
-========================= */
-.scroll-text {
-    display: inline-block;
-    animation: scrollUp 12s linear infinite;
+/* SCROLL WRAPPER */
+.scroll-inner {
+    display: flex;
+    flex-direction: column;
+    animation: scrollUp 15s linear infinite;
 }
 
+/* SHOW ALL TEXT */
 @keyframes scrollUp {
     0% { transform: translateY(0); }
     100% { transform: translateY(-50%); }
 }
 
 /* PRIMARY */
-.info-panel.primary .panel-header {
+.primary .panel-header {
     background: var(--gold);
     color: black;
 }
 
-.info-panel.primary .panel-content {
+.primary .panel-content {
     background: var(--navy);
     color: var(--text-light);
 }
 
 /* SECONDARY */
-.info-panel.secondary .panel-header {
+.secondary .panel-header {
     background: var(--navy);
     color: var(--text-light);
 }
 
-.info-panel.secondary .panel-content {
+.secondary .panel-content {
     background: var(--gold);
     color: black;
 }
 
-/* NEWS BAR */
+/* NEWS */
 #news-bar {
     height: 8vh;
     background: var(--gold);
     display: flex;
+    align-items: center;
 }
 
 .ticker-label {
@@ -169,7 +169,7 @@ main {
 
 .marquee {
     white-space: nowrap;
-    font-size: 1.7rem;
+    font-size: 1.6rem;
     font-weight: 700;
     padding-left: 100%;
     animation: scroll 35s linear infinite;
@@ -207,13 +207,13 @@ Invictus International School<br>
 
 <!-- IMAGE -->
 <div class="card">
-<img id="slideshow" src="">
+<img id="slideshow">
 </div>
 
 <!-- RIGHT -->
 <div class="right-col">
 
-<!-- VIDEO (NOW SMALLER) -->
+<!-- VIDEO -->
 <div class="card video-box">
 <iframe id="yt-player"></iframe>
 </div>
@@ -226,7 +226,7 @@ Invictus International School<br>
 <div class="panel-header">PRIMARY</div>
 <div class="panel-divider"></div>
 <div class="panel-content">
-<div class="scroll-text" id="campus-updates">Loading...</div>
+<div class="scroll-inner" id="campus-updates"></div>
 </div>
 </div>
 
@@ -235,7 +235,7 @@ Invictus International School<br>
 <div class="panel-header">SECONDARY</div>
 <div class="panel-divider"></div>
 <div class="panel-content">
-<div class="scroll-text" id="student-highlights">Loading...</div>
+<div class="scroll-inner" id="student-highlights"></div>
 </div>
 </div>
 
@@ -254,6 +254,7 @@ Invictus International School<br>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
 
+/* CLOCK */
 function clock() {
     const now = new Date();
     document.getElementById("time").innerText =
@@ -261,6 +262,7 @@ function clock() {
     document.getElementById("date").innerText = now.toDateString();
 }
 
+/* IMAGE */
 let slideshowInterval;
 
 async function refreshImages() {
@@ -282,20 +284,22 @@ async function refreshImages() {
     }
 }
 
+/* TEXT (AUTO DUP FOR SMOOTH SCROLL) */
 async function refreshText() {
     const res = await fetch(API_URL);
     const data = await res.json();
 
-    document.getElementById("campus-updates").innerHTML =
-        (data.notices || []).map(n => `▶ ${n}`).join("<br>");
+    const primary = (data.notices || []).map(n => `<div>▶ ${n}</div>`).join("");
+    const secondary = (data.highlights || []).map(h => `<div>★ ${h}</div>`).join("");
 
-    document.getElementById("student-highlights").innerHTML =
-        (data.highlights || []).map(h => `★ ${h}`).join("<br>");
+    document.getElementById("campus-updates").innerHTML = primary + primary;
+    document.getElementById("student-highlights").innerHTML = secondary + secondary;
 
     document.getElementById("marquee-text").innerText =
         data.bulletin || "Welcome";
 }
 
+/* YOUTUBE */
 let videoLoaded = false;
 
 async function loadYouTube() {
