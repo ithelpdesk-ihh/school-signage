@@ -253,26 +253,26 @@ async function refreshSignage() {
         document.getElementById("marquee-text").innerText = data.bulletin || "Welcome";
 
         // ✅ YOUTUBE LOGIC
-        let currentVideo = 0;
-let videoTimer;
+        
+
+        let videoLoaded = false;
 
 // =========================
 // YOUTUBE PLAYLIST
 // =========================
 
-if (data.videos && data.videos.length > 0) {
+if (data.videos && data.videos.length > 0 && !videoLoaded) {
 
     const player = document.getElementById("yt-player");
 
-    // convert array into playlist
     const playlist = data.videos.join(",");
 
-    // first video
     const firstVideo = data.videos[0];
 
     player.src = `https://www.youtube.com/embed/${firstVideo}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&disablekb=1&loop=1&playlist=${playlist}`;
 
-    }
+    videoLoaded = true;
+}
 
     } catch (e) {
         console.error(e);
