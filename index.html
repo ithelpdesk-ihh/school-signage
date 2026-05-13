@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invictus Live Signage</title>
+
 <style>
 :root {
     --navy: #0f172a;
@@ -50,9 +51,9 @@ header {
     text-align: right;
 }
 
-/* SMALLER CLOCK (FIXED) */
+/* CLOCK */
 #time {
-    font-size: 4.2rem;   /* ⬅ reduced from 7rem */
+    font-size: 4.2rem;
     font-weight: 800;
     line-height: 1;
     letter-spacing: 1px;
@@ -61,7 +62,7 @@ header {
 /* DATE */
 #date {
     color: var(--gold);
-    font-size: 1.3rem;   /* ⬅ smaller */
+    font-size: 1.3rem;
     font-weight: 600;
     text-transform: uppercase;
     margin-top: 4px;
@@ -98,6 +99,13 @@ main {
     flex: 4;
     background: #000;
     border-radius: 18px;
+    position: relative;
+}
+
+/* Make YouTube player fill box */
+#yt-player {
+    width: 100%;
+    height: 100%;
 }
 
 /* BOTTOM PANELS */
@@ -125,7 +133,7 @@ main {
     padding-bottom: 6px;
 }
 
-/* BOTTOM NEWS BAR */
+/* NEWS BAR */
 #news-bar {
     height: 8vh;
     background: var(--gold);
@@ -166,118 +174,249 @@ main {
 }
 
 /* MEDIA */
-iframe, img {
+img {
     width: 100%;
     height: 100%;
     border: none;
     object-fit: cover;
 }
 </style>
+
+<!-- YOUTUBE API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
 </head>
 
 <body>
 
 <header>
-<div class="school-name">Invictus International School<br><span style="color: var(--gold); font-size: 3rem;">Horizon Hills</span></div>
-    <div class="clock-container">
-        <div id="time">00:00</div>
-        <div id="date">LOADING...</div>
-    </div>
+<div class="school-name">
+    Invictus International School<br>
+    <span style="color: var(--gold); font-size: 3rem;">
+        Horizon Hills
+    </span>
+</div>
+
+<div class="clock-container">
+    <div id="time">00:00</div>
+    <div id="date">LOADING...</div>
+</div>
 </header>
 
 <main>
+
+    <!-- LEFT SLIDESHOW -->
     <div class="card poster-box">
         <img id="slideshow" src="">
     </div>
 
+    <!-- RIGHT -->
     <div class="right-col">
-        <!-- ✅ YOUTUBE PLAYER -->
-    <div class="card video-box">
-        <iframe id="yt-player"
-        src=""
-        allow="autoplay; encrypted-media"
-        allowfullscreen>
-        </iframe>
-    </div>
 
+        <!-- VIDEO -->
+        <div class="card video-box">
+            <div id="yt-player"></div>
+        </div>
+
+        <!-- BOTTOM PANELS -->
         <div class="bottom-split">
-            <div class="card info-panel" id="campus-updates" style="background: var(--gold); color: black;">
+
+            <div class="card info-panel"
+                 id="campus-updates"
+                 style="background: var(--gold); color: black;">
+
                 <h2>PRIMARY</h2>
                 <div class="content">Loading updates...</div>
+
             </div>
 
-            <div class="card info-panel" style="background: var(--navy); color: white;">
+            <div class="card info-panel"
+                 style="background: var(--navy); color: white;">
+
                 <h2 style="color: var(--gold);">SECONDARY</h2>
-                <div id="student-highlights" class="content">Loading highlights...</div>
+
+                <div id="student-highlights" class="content">
+                    Loading highlights...
+                </div>
+
             </div>
-            
+
         </div>
+
     </div>
+
 </main>
 
+<!-- BULLETIN -->
 <div id="news-bar">
-    <div class="ticker-label">BULLETIN</div>
-    <div class="marquee-container">
-        <div id="marquee-text" class="marquee">Connecting to Google...</div>
+
+    <div class="ticker-label">
+        BULLETIN
     </div>
+
+    <div class="marquee-container">
+        <div id="marquee-text" class="marquee">
+            Connecting to Google...
+        </div>
+    </div>
+
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
+
 let slideshowInterval;
 
+// =========================
+// YOUTUBE VARIABLES
+// =========================
+let player;
+let playlist = [];
+let currentVideo = 0;
+
+// =========================
+// YOUTUBE API READY
+// =========================
+function onYouTubeIframeAPIReady() {
+
+    player = new YT.Player('yt-player', {
+
+        height: '100%',
+        width: '100%',
+
+        playerVars: {
+            autoplay: 1,
+            controls: 0,
+            rel: 0,
+            modestbranding: 1,
+            mute: 1,
+            playsinline: 1,
+            disablekb: 1,
+            iv_load_policy: 3
+        },
+
+        events: {
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+// =========================
+// PLAY CURRENT VIDEO
+// =========================
+function playCurrentVideo() {
+
+    if (!playlist.length) return;
+
+    player.loadVideoById(playlist[currentVideo]);
+}
+
+// =========================
+// AUTO NEXT VIDEO
+// =========================
+function onPlayerStateChange(event) {
+
+    if (event.data === YT.PlayerState.ENDED) {
+
+        currentVideo++;
+
+        if (currentVideo >= playlist.length) {
+            currentVideo = 0;
+        }
+
+        playCurrentVideo();
+    }
+}
+
+// =========================
+// REFRESH SIGNAGE
+// =========================
 async function refreshSignage() {
+
     try {
+
         const res = await fetch(API_URL);
         const data = await res.json();
-            
+
+        // =========================
         // SLIDESHOW
+        // =========================
         if (data.images && data.images.length > 0) {
+
             const img = document.getElementById("slideshow");
+
             let i = 0;
+
             img.src = data.images[0];
-            if (slideshowInterval) clearInterval(slideshowInterval);
+
+            if (slideshowInterval)
+                clearInterval(slideshowInterval);
+
             slideshowInterval = setInterval(() => {
+
                 i = (i + 1) % data.images.length;
                 img.src = data.images[i];
+
             }, 10000);
         }
 
-        // TEXT CONTENT
-        const campusContent = document.getElementById("campus-updates").querySelector(".content");
-        campusContent.innerHTML = (data.notices || []).map(n => `▶ ${n}`).join("<br>");
+        // =========================
+        // PRIMARY PANEL
+        // =========================
+        const campusContent =
+            document.getElementById("campus-updates")
+            .querySelector(".content");
 
-        const highlightContent = document.getElementById("student-highlights");
-        highlightContent.innerHTML = (data.highlights || []).map(h => `★ ${h}`).join("<br>");
+        campusContent.innerHTML =
+            (data.notices || [])
+            .map(n => `▶ ${n}`)
+            .join("<br>");
 
-        document.getElementById("marquee-text").innerText = data.bulletin || "Welcome";
+        // =========================
+        // SECONDARY PANEL
+        // =========================
+        const highlightContent =
+            document.getElementById("student-highlights");
 
-        // ✅ YOUTUBE LOGIC
-        let currentVideo = 0;
-let videoTimer;
+        highlightContent.innerHTML =
+            (data.highlights || [])
+            .map(h => `★ ${h}`)
+            .join("<br>");
 
-// =========================
-// YOUTUBE ROTATION
-// =========================
-function loadVideo(id) {
+        // =========================
+        // BULLETIN
+        // =========================
+        document.getElementById("marquee-text").innerText =
+            data.bulletin || "Welcome";
 
-    const player = document.getElementById("yt-player");
+        // =========================
+        // VIDEO PLAYLIST
+        // =========================
+        if (data.videos && data.videos.length > 0) {
 
-    player.src =
-      `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&disablekb=1`;
-}
+            playlist = data.videos;
 
-if (data.videos && data.videos.length > 0) {
-    currentVideo = 0;
-    loadVideo(data.videos[currentVideo]);
-}
+            // Start only once
+            if (player && player.getPlayerState() === -1) {
+
+                currentVideo = 0;
+                playCurrentVideo();
+            }
+        }
 
     } catch (e) {
+
         console.error(e);
     }
 }
 
+// =========================
+// CLOCK
+// =========================
 function clock() {
+
     const now = new Date();
 
     document.getElementById('time').innerText =
@@ -290,10 +429,17 @@ function clock() {
         now.toDateString();
 }
 
+// =========================
+// START
+// =========================
 setInterval(clock, 1000);
+
 clock();
+
 refreshSignage();
+
 setInterval(refreshSignage, 300000);
+
 </script>
 
 </body>
