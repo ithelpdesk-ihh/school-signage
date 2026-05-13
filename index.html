@@ -34,12 +34,9 @@ header {
     background: var(--navy);
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 0 30px;
-    border-bottom: 5px solid var(--gold);
 }
 
-/* MAIN LAYOUT */
+/* MAIN */
 main {
     height: 78vh;
     display: grid;
@@ -69,21 +66,20 @@ main {
     height: 100%;
 }
 
-/* VIDEO */
+/* 🔥 REDUCED YOUTUBE HEIGHT */
 .video-box {
-    flex: 3;
+    flex: 2; /* was 3 → now smaller */
     background: black;
     border-radius: 16px;
     overflow: hidden;
 }
 
-/* BOTTOM AREA */
+/* BOTTOM */
 .bottom-split {
-    flex: 1;
+    flex: 2; /* give more space to text panels */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
-    min-height: 0;
 }
 
 /* INFO PANEL */
@@ -99,7 +95,6 @@ main {
 .panel-header {
     padding: 10px 12px;
     font-weight: 900;
-    font-size: 1rem;
 }
 
 /* DIVIDER */
@@ -113,9 +108,25 @@ main {
     padding: 10px 12px;
     font-size: 0.95rem;
     line-height: 1.4;
+
+    overflow: hidden;
+    position: relative;
 }
 
-/* PRIMARY (GOLD HEADER → NAVY CONTENT) */
+/* =========================
+   AUTO SCROLL TEXT
+========================= */
+.scroll-text {
+    display: inline-block;
+    animation: scrollUp 12s linear infinite;
+}
+
+@keyframes scrollUp {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+}
+
+/* PRIMARY */
 .info-panel.primary .panel-header {
     background: var(--gold);
     color: black;
@@ -126,7 +137,7 @@ main {
     color: var(--text-light);
 }
 
-/* SECONDARY (NAVY HEADER → GOLD CONTENT) */
+/* SECONDARY */
 .info-panel.secondary .panel-header {
     background: var(--navy);
     color: var(--text-light);
@@ -142,16 +153,13 @@ main {
     height: 8vh;
     background: var(--gold);
     display: flex;
-    align-items: center;
-    color: #000;
 }
 
 .ticker-label {
     background: var(--navy);
-    color: #fff;
+    color: white;
     padding: 0 25px;
     font-weight: 900;
-    font-size: 2rem;
 }
 
 .marquee-container {
@@ -186,7 +194,7 @@ iframe, img {
 <header>
 <div>
 Invictus International School<br>
-<span style="color: var(--gold); font-size: 2rem;">Horizon Hills</span>
+<span style="color: var(--gold);">Horizon Hills</span>
 </div>
 
 <div>
@@ -202,27 +210,33 @@ Invictus International School<br>
 <img id="slideshow" src="">
 </div>
 
-<!-- RIGHT SIDE -->
+<!-- RIGHT -->
 <div class="right-col">
 
-<!-- VIDEO -->
+<!-- VIDEO (NOW SMALLER) -->
 <div class="card video-box">
 <iframe id="yt-player"></iframe>
 </div>
 
-<!-- PRIMARY + SECONDARY -->
+<!-- TEXT -->
 <div class="bottom-split">
 
+<!-- PRIMARY -->
 <div class="info-panel primary">
 <div class="panel-header">PRIMARY</div>
 <div class="panel-divider"></div>
-<div id="campus-updates" class="panel-content">Loading...</div>
+<div class="panel-content">
+<div class="scroll-text" id="campus-updates">Loading...</div>
+</div>
 </div>
 
+<!-- SECONDARY -->
 <div class="info-panel secondary">
 <div class="panel-header">SECONDARY</div>
 <div class="panel-divider"></div>
-<div id="student-highlights" class="panel-content">Loading...</div>
+<div class="panel-content">
+<div class="scroll-text" id="student-highlights">Loading...</div>
+</div>
 </div>
 
 </div>
