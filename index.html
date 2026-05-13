@@ -39,7 +39,7 @@ header {
     border-bottom: 5px solid var(--gold);
 }
 
-/* MAIN */
+/* MAIN LAYOUT */
 main {
     height: 78vh;
     display: grid;
@@ -66,33 +66,36 @@ main {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    height: 100%;
 }
 
 /* VIDEO */
 .video-box {
     flex: 3;
     background: black;
+    border-radius: 16px;
+    overflow: hidden;
 }
 
-/* BOTTOM */
+/* BOTTOM AREA */
 .bottom-split {
     flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
+    min-height: 0;
 }
 
-/* =========================
-   INFO PANEL STRUCTURE
-========================= */
+/* INFO PANEL */
 .info-panel {
     display: flex;
     flex-direction: column;
     border-radius: 12px;
     overflow: hidden;
+    height: 100%;
 }
 
-/* HEADER AREA */
+/* HEADER */
 .panel-header {
     padding: 10px 12px;
     font-weight: 900;
@@ -105,16 +108,14 @@ main {
     background: black;
 }
 
-/* CONTENT AREA */
+/* CONTENT */
 .panel-content {
     padding: 10px 12px;
     font-size: 0.95rem;
     line-height: 1.4;
 }
 
-/* =========================
-   PRIMARY (GOLD → NAVY)
-========================= */
+/* PRIMARY (GOLD HEADER → NAVY CONTENT) */
 .info-panel.primary .panel-header {
     background: var(--gold);
     color: black;
@@ -125,9 +126,7 @@ main {
     color: var(--text-light);
 }
 
-/* =========================
-   SECONDARY (NAVY → GOLD)
-========================= */
+/* SECONDARY (NAVY HEADER → GOLD CONTENT) */
 .info-panel.secondary .panel-header {
     background: var(--navy);
     color: var(--text-light);
@@ -203,23 +202,23 @@ Invictus International School<br>
 <img id="slideshow" src="">
 </div>
 
-<!-- RIGHT -->
+<!-- RIGHT SIDE -->
 <div class="right-col">
 
+<!-- VIDEO -->
 <div class="card video-box">
 <iframe id="yt-player"></iframe>
 </div>
 
+<!-- PRIMARY + SECONDARY -->
 <div class="bottom-split">
 
-<!-- PRIMARY -->
 <div class="info-panel primary">
 <div class="panel-header">PRIMARY</div>
 <div class="panel-divider"></div>
 <div id="campus-updates" class="panel-content">Loading...</div>
 </div>
 
-<!-- SECONDARY -->
 <div class="info-panel secondary">
 <div class="panel-header">SECONDARY</div>
 <div class="panel-divider"></div>
