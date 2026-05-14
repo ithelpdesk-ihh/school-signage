@@ -1,555 +1,454 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Invictus Live Signage</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invictus Live Signage</title>
+    <style>
+        :root {
+            --navy: #0f172a;
+            --gold: #f59e0b;
+            --bg: #020617;
+            --white: #f8fafc;
+            --soft: #e2e8f0;
+        }
 
-<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-:root{
-    --navy:#0f172a;
-    --gold:#f59e0b;
-    --bg:#020617;
-    --white:#f8fafc;
-    --soft:#e2e8f0;
-}
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            color: var(--white);
+        }
 
-/* RESET */
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+        /* HEADER */
+        header {
+            height: 14vh;
+            background: linear-gradient(90deg, var(--navy), #1e293b);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            border-bottom: 5px solid var(--gold);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
 
-html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:var(--bg);
-    font-family:"Segoe UI",sans-serif;
-    color:var(--white);
-}
+        .school-name {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
 
-/* HEADER */
-header{
-    height:14vh;
-    background:linear-gradient(90deg,var(--navy),#1e293b);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 35px;
-    border-bottom:5px solid var(--gold);
-    box-shadow:0 4px 15px rgba(0,0,0,0.4);
-}
+        .school-name span {
+            color: var(--gold);
+            font-size: 2.8rem;
+        }
 
-.school-name{
-    font-size:1.8rem;
-    font-weight:900;
-    letter-spacing:1px;
-    line-height:1.2;
-}
+        .clock-container {
+            text-align: right;
+        }
 
-.school-name span{
-    color:var(--gold);
-    font-size:2.6rem;
-}
+        #time {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1;
+        }
 
-.clock-container{
-    text-align:right;
-}
+        #date {
+            color: var(--gold);
+            font-size: 1.2rem;
+            margin-top: 5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
 
-#time{
-    font-size:3.8rem;
-    font-weight:900;
-    line-height:1;
-}
+        /* MAIN LAYOUT */
+        main {
+            height: 78vh;
+            display: grid;
+            grid-template-columns: 1fr 1.6fr;
+            gap: 20px;
+            padding: 20px;
+        }
 
-#date{
-    color:var(--gold);
-    font-size:1.1rem;
-    margin-top:5px;
-    letter-spacing:1px;
-}
+        .card {
+            border-radius: 20px;
+            overflow: hidden;
+            min-height: 0;
+            background: #111827;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
 
-/* MAIN */
-main{
-    height:78vh;
-    display:grid;
-    grid-template-columns:1fr 1.6fr;
-    gap:16px;
-    padding:16px;
-}
+        .poster-box {
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.08);
+            background: #090d16;
+        }
 
-/* GENERAL CARD */
-.card{
-    border-radius:18px;
-    overflow:hidden;
-    min-height:0;
-    background:#111827;
-    box-shadow:
-    0 10px 25px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.05);
-}
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 0;
+        }
 
-/* LEFT IMAGE */
-.poster-box{
-    position:relative;
-    border:2px solid rgba(255,255,255,0.08);
-}
+        /* VIDEO - Shrunk from flex:3 to flex:2 */
+        .video-box {
+            flex: 2;
+            background: #000;
+            border: 2px solid rgba(255,255,255,0.08);
+        }
 
-/* RIGHT COLUMN */
-.right-col{
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-    min-height:0;
-}
+        /* LOWER PANELS - Expanded from flex:1.3 to flex:2.2 */
+        .bottom-split {
+            flex: 2.2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            min-height: 0;
+        }
 
-/* VIDEO */
-.video-box{
-    flex:3;
-    background:#000;
-    border:2px solid rgba(255,255,255,0.08);
-}
+        .info-panel {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            padding: 18px;
+            border: 2px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 24px rgba(0,0,0,0.4);
+        }
 
-/* LOWER PANELS */
-.bottom-split{
-    flex:1;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:16px;
-    min-height:0;
-}
+        .primary-panel {
+            background: linear-gradient(145deg, #0f172a 0%, #162238 70%, #855302 100%);
+        }
 
-/* PANELS */
-.info-panel{
-    position:relative;
-    overflow:hidden;
-    border-radius:18px;
-    padding:14px;
-    backdrop-filter:blur(6px);
-    border:2px solid rgba(255,255,255,0.08);
-    box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 10px 20px rgba(0,0,0,0.35);
-}
+        .secondary-panel {
+            background: linear-gradient(145deg, #b47504 0%, #855302 60%, #0f172a 100%);
+        }
 
-/* PRIMARY PANEL */
-.primary-panel{
-    background:
-    linear-gradient(
-        145deg,
-        #0f172a 0%,
-        #162238 65%,
-        #f59e0b 100%
-    );
-}
+        .panel-header {
+            position: relative;
+            z-index: 2;
+        }
 
-/* SECONDARY PANEL */
-.secondary-panel{
-    background:
-    linear-gradient(
-        145deg,
-        #f59e0b 0%,
-        #d48a08 60%,
-        #0f172a 100%
-    );
-}
+        .panel-header h2 {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
 
-/* PANEL TITLE */
-.panel-header{
-    position:relative;
-    z-index:2;
-}
+        .panel-divider {
+            width: 100%;
+            height: 4px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, rgba(0,0,0,0.8), rgba(0,0,0,0.1));
+            margin-bottom: 14px;
+        }
 
-.panel-header h2{
-    font-size:1.2rem;
-    font-weight:900;
-    letter-spacing:1px;
-    margin-bottom:10px;
-}
+        /* VERTICAL SCROLL ANIMATION */
+        .scroll-container {
+            position: relative;
+            height: calc(100% - 45px);
+            overflow: hidden;
+        }
 
-/* NICE BLACK LINE */
-.panel-divider{
-    width:100%;
-    height:4px;
-    border-radius:10px;
-    background:
-    linear-gradient(
-        90deg,
-        #000,
-        rgba(0,0,0,0.4)
-    );
-    margin-bottom:12px;
-}
+        .scroll-content {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            font-weight: 600;
+        }
 
-/* SCROLL AREA */
-.scroll-container{
-    position:relative;
-    height:calc(100% - 50px);
-    overflow:hidden;
-}
+        .scroll-content div {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 12px 16px;
+            border-radius: 14px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-left: 5px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
 
-/* SCROLL TEXT */
-.scroll-content{
-    position:absolute;
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    font-size:1rem;
-    line-height:1.5;
-    font-weight:600;
+        /* TICKER BULLETIN */
+        #news-bar {
+            height: 8vh;
+            display: flex;
+            align-items: center;
+            background: var(--gold);
+            overflow: hidden;
+            box-shadow: 0 -6px 25px rgba(0,0,0,0.4);
+        }
 
-    animation:scrollUp 28s linear infinite;
-}
+        .ticker-label {
+            height: 100%;
+            background: var(--navy);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 35px;
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            box-shadow: 6px 0 15px rgba(0,0,0,0.4);
+            z-index: 5;
+        }
 
-.scroll-content div{
-    background:rgba(255,255,255,0.12);
-    padding:10px 12px;
-    border-radius:12px;
-    backdrop-filter:blur(3px);
-    border-left:4px solid rgba(255,255,255,0.7);
-}
+        .marquee-container {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
 
-/* SCROLL ANIMATION */
-@keyframes scrollUp{
-    0%{
-        transform:translateY(100%);
-    }
+        .marquee {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #000;
+            will-change: transform;
+        }
 
-    100%{
-        transform:translateY(-100%);
-    }
-}
+        @keyframes marqueeLoop {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
 
-/* BULLETIN */
-#news-bar{
-    height:8vh;
-    display:flex;
-    align-items:center;
-    background:var(--gold);
-    overflow:hidden;
-    box-shadow:0 -4px 15px rgba(0,0,0,0.35);
-}
+        /* MEDIA CONFIGS */
+        iframe, img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: none;
+        }
 
-/* BULLETIN LABEL */
-.ticker-label{
-    height:100%;
-    background:var(--navy);
-    color:white;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:0 28px;
-    font-size:2rem;
-    font-weight:900;
-    letter-spacing:1px;
-    box-shadow:4px 0 10px rgba(0,0,0,0.3);
-}
-
-/* BULLETIN SCROLL */
-.marquee-container{
-    flex:1;
-    overflow:hidden;
-    position:relative;
-}
-
-.marquee{
-    display:inline-block;
-    white-space:nowrap;
-    padding-left:100%;
-    font-size:1.8rem;
-    font-weight:800;
-    color:#000;
-
-    animation:scroll linear infinite;
-}
-
-@keyframes scroll{
-    from{
-        transform:translateX(0%);
-    }
-
-    to{
-        transform:translateX(-100%);
-    }
-}
-
-/* MEDIA */
-iframe,
-img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    border:none;
-}
-
-/* SMALL GLOW EFFECT */
-.primary-panel::before,
-.secondary-panel::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:
-    radial-gradient(
-        circle at top right,
-        rgba(255,255,255,0.18),
-        transparent 45%
-    );
-    pointer-events:none;
-}
-
-</style>
+        .info-panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.15), transparent 50%);
+            pointer-events: none;
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- HEADER -->
-<header>
+    <!-- HEADER -->
+    <header>
+        <div class="school-name">
+            Invictus International School<br>
+            <span>Horizon Hills</span>
+        </div>
+        <div class="clock-container">
+            <div id="time">00:00</div>
+            <div id="date">LOADING...</div>
+        </div>
+    </header>
 
-<div class="school-name">
-Invictus International School<br>
-<span>Horizon Hills</span>
-</div>
+    <!-- MAIN DISPLAY -->
+    <main>
+        <!-- LEFT POSTER SLIDESHOW -->
+        <div class="card poster-box">
+            <img id="slideshow" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Signage Screen" />
+        </div>
 
-<div class="clock-container">
-<div id="time">00:00</div>
-<div id="date">LOADING...</div>
-</div>
+        <!-- RIGHT CONTAINER -->
+        <div class="right-col">
+            <!-- YOUTUBE VIDEO -->
+            <div class="card video-box">
+                <iframe id="yt-player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
 
-</header>
+            <!-- ANNOUNCEMENT PANELS -->
+            <div class="bottom-split">
+                <!-- PRIMARY -->
+                <div class="info-panel primary-panel">
+                    <div class="panel-header">
+                        <h2>PRIMARY</h2>
+                        <div class="panel-divider"></div>
+                    </div>
+                    <div class="scroll-container" id="primary-container">
+                        <div id="campus-updates" class="scroll-content">Loading updates...</div>
+                    </div>
+                </div>
 
-<!-- MAIN -->
-<main>
+                <!-- SECONDARY -->
+                <div class="info-panel secondary-panel">
+                    <div class="panel-header">
+                        <h2>SECONDARY</h2>
+                        <div class="panel-divider"></div>
+                    </div>
+                    <div class="scroll-container" id="secondary-container">
+                        <div id="student-highlights" class="scroll-content">Loading highlights...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-<!-- LEFT IMAGE -->
-<div class="card poster-box">
-<img id="slideshow" src="" />
-</div>
+    <!-- FOOTER BULLETIN TICKER -->
+    <div id="news-bar">
+        <div class="ticker-label">BULLETIN</div>
+        <div class="marquee-container">
+            <div id="marquee-text" class="marquee">Connecting to Web Server...</div>
+        </div>
+    </div>
 
-<!-- RIGHT SIDE -->
-<div class="right-col">
+    <script>
+        const API_URL = "google.com";
+        
+        // Fail-safe fallbacks if the network cuts out
+        const fallbackData = {
+            images: ["unsplash.com"],
+            videos: ["dQw4w9WgXcQ"],
+            notices: ["Welcome to Invictus Horizon Hills", "Please check your daily terminal schedule."],
+            highlights: ["Strive for excellence!", "Celebrating our students achievements every day."],
+            bulletin: "Invictus International School Horizon Hills - Nurturing Next-Generation Leaders."
+        };
 
-<!-- VIDEO -->
-<div class="card video-box">
-<iframe
-id="yt-player"
-allow="autoplay; encrypted-media"
-allowfullscreen>
-</iframe>
-</div>
+        let localStore = { ...fallbackData };
+        let slideshowIdx = 0;
+        let imgTimer = null;
+        let videoInitialized = false;
 
-<!-- PANELS -->
-<div class="bottom-split">
+        /* CLOCK DRIVER */
+        function updateClock() {
+            const now = new Date();
+            document.getElementById("time").textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+            document.getElementById("date").textContent = now.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-<!-- PRIMARY -->
-<div class="info-panel primary-panel">
-
-<div class="panel-header">
-<h2>PRIMARY</h2>
-<div class="panel-divider"></div>
-</div>
-
-<div class="scroll-container">
-<div id="campus-updates" class="scroll-content">
-Loading...
-</div>
-</div>
-
-</div>
-
-<!-- SECONDARY -->
-<div class="info-panel secondary-panel">
-
-<div class="panel-header">
-<h2>SECONDARY</h2>
-<div class="panel-divider"></div>
-</div>
-
-<div class="scroll-container">
-<div id="student-highlights" class="scroll-content">
-Loading...
-</div>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</main>
-
-<!-- BULLETIN -->
-<div id="news-bar">
-
-<div class="ticker-label">
-BULLETIN
-</div>
-
-<div class="marquee-container">
-<div id="marquee-text" class="marquee">
-Loading...
-</div>
-</div>
-
-</div>
-
-<script>
-
-const API_URL =
-"https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
-
-/* CLOCK */
-function clock(){
-
-    const now = new Date();
-
-    document.getElementById("time").innerText =
-    now.toLocaleTimeString([],{
-        hour:"2-digit",
-        minute:"2-digit"
-    });
-
-    document.getElementById("date").innerText =
-    now.toDateString();
-}
-
-/* IMAGE SYSTEM */
-let slideshowInterval;
-
-async function refreshImages(){
-
-    try{
-
-        const res = await fetch(API_URL);
-        const data = await res.json();
-
-        if(data.images?.length){
-
-            const img =
-            document.getElementById("slideshow");
-
-            let i = 0;
-
-            img.src = data.images[0];
-
-            clearInterval(slideshowInterval);
-
-            slideshowInterval = setInterval(()=>{
-
-                i = (i + 1) % data.images.length;
-
-                img.src = data.images[i];
-
-            },5000);
+        /* UNIFIED APP REFRESH ENGINE */
+        async function fetchSignageData() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error("Network status invalid");
+                const data = await response.json();
+                
+                if (data) {
+                    localStore.images = data.images?.length ? data.images : fallbackData.images;
+                    localStore.videos = data.videos?.length ? data.videos : fallbackData.videos;
+                    localStore.notices = data.notices?.length ? data.notices : fallbackData.notices;
+                    localStore.highlights = data.highlights?.length ? data.highlights : fallbackData.highlights;
+                    localStore.bulletin = data.bulletin || fallbackData.bulletin;
+                    
+                    renderTextElements();
+                    renderSlideshow();
+                    renderVideoPlayer();
+                }
+            } catch (err) {
+                console.error("Signage Fetch Failure:", err);
+                renderTextElements();
+                renderSlideshow();
+                renderVideoPlayer();
+            }
         }
 
-    }catch(e){
+        /* TEXT AND BULLETIN ENGINE */
+        function renderTextElements() {
+            document.getElementById("campus-updates").innerHTML = localStore.notices
+                .map(item => `<div>▶ ${item}</div>`).join("");
 
-        console.log("Image error",e);
-    }
-}
+            document.getElementById("student-highlights").innerHTML = localStore.highlights
+                .map(item => `<div>★ ${item}</div>`).join("");
 
-/* TEXT */
-async function refreshText(){
+            const tickerText = document.getElementById("marquee-text");
+            tickerText.textContent = localStore.bulletin;
+            
+            const calculationSpeed = Math.max(12, localStore.bulletin.length * 0.18);
+            tickerText.style.animation = `marqueeLoop ${calculationSpeed}s linear infinite`;
 
-    try{
-
-        const res = await fetch(API_URL);
-        const data = await res.json();
-
-        /* PRIMARY */
-        document.getElementById("campus-updates").innerHTML =
-
-        (data.notices || ["No updates"])
-
-        .map(n => `<div>▶ ${n}</div>`)
-
-        .join("");
-
-        /* SECONDARY */
-        document.getElementById("student-highlights").innerHTML =
-
-        (data.highlights || ["No highlights"])
-
-        .map(h => `<div>★ ${h}</div>`)
-
-        .join("");
-
-        /* BULLETIN */
-        const el =
-        document.getElementById("marquee-text");
-
-        const text =
-        data.bulletin || "Welcome to Invictus International School";
-
-        el.innerText = text;
-
-        /* AUTO SPEED */
-        const speed =
-        Math.max(15, text.length * 0.35);
-
-        el.style.animationDuration =
-        speed + "s";
-
-    }catch(e){
-
-        console.log("Text error",e);
-    }
-}
-
-/* YOUTUBE */
-let videoLoaded = false;
-
-async function loadYouTube(){
-
-    try{
-
-        if(videoLoaded) return;
-
-        const res = await fetch(API_URL);
-        const data = await res.json();
-
-        if(data.videos?.length){
-
-            const player =
-            document.getElementById("yt-player");
-
-            const playlist =
-            data.videos.join(",");
-
-            const first =
-            data.videos[0];
-
-            player.src =
-
-            `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
-
-            videoLoaded = true;
+            bindVerticalScroller("campus-updates", "primary-container");
+            bindVerticalScroller("student-highlights", "secondary-container");
         }
 
-    }catch(e){
+        /* DYNAMIC TEXT SCROLLER CONTROLLER */
+        function bindVerticalScroller(contentId, containerId) {
+            const content = document.getElementById(contentId);
+            const container = document.getElementById(containerId);
+            
+            content.style.animation = "none";
+            
+            setTimeout(() => {
+                const travelDistance = content.offsetHeight;
+                const viewWindow = container.offsetHeight;
+                
+                if (travelDistance > viewWindow) {
+                    const dynamicDuration = Math.max(10, travelDistance * 0.05);
+                    
+                    const styleId = `scroll-${contentId}`;
+                    let styleTag = document.getElementById(styleId);
+                    if(!styleTag) {
+                        styleTag = document.createElement('style');
+                        styleTag.id = styleId;
+                        document.head.appendChild(styleTag);
+                    }
+                    
+                    styleTag.innerHTML = `
+                        @keyframes loopMove-${contentId} {
+                            0% { transform: translate3d(0, ${viewWindow}px, 0); }
+                            100% { transform: translate3d(0, -${travelDistance}px, 0); }
+                        }
+                    `;
+                    content.style.animation = `loopMove-${contentId} ${dynamicDuration}s linear infinite`;
+                } else {
+                    content.style.transform = "translate3d(0,0,0)";
+                }
+            }, 100);
+        }
 
-        console.log("YouTube error",e);
-    }
-}
+        /* IMAGE SLIDESHOW ENGINE */
+        function renderSlideshow() {
+            if (imgTimer) clearInterval(imgTimer);
+            
+            const imgElement = document.getElementById("slideshow");
+            if (!localStore.images || !localStore.images.length) return;
 
-/* START */
-clock();
+            if(!imgElement.src || imgElement.src.startsWith("data:")) {
+                imgElement.src = localStore.images[0];
+            }
 
-setInterval(clock,1000);
+            imgTimer = setInterval(() => {
+                slideshowIdx = (slideshowIdx + 1) % localStore.images.length;
+                imgElement.src = localStore.images[slideshowIdx];
+            }, 7000);
+        }
 
-refreshText();
-refreshImages();
-loadYouTube();
+        /* YOUTUBE IFRAME LOOPING ENGINE */
+        function renderVideoPlayer() {
+            if (videoInitialized) return; 
+            
+            const player = document.getElementById("yt-player");
+            if (localStore.videos && localStore.videos.length) {
+                const firstVideo = localStore.videos[0];
+                const playlistIds = localStore.videos.join(",");
+                
+                player.src = `youtube.com{firstVideo}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlistIds}&iv_load_policy=3&enablejsapi=1`;
+                videoInitialized = true;
+            }
+        }
 
-/* AUTO REFRESH */
-setInterval(refreshText,20000);
-setInterval(refreshImages,300000);
-
-</script>
-
+        /* ENGINE INITIALIZATION AND REFRESH LOOPS */
+        fetchSignageData();
+        setInterval(fetchSignageData, 60000);
+    </script>
 </body>
 </html>
