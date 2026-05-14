@@ -6,6 +6,7 @@
 <title>Invictus Live Signage</title>
 
 <style>
+
 :root {
     --navy: #0f172a;
     --gold: #f59e0b;
@@ -22,8 +23,8 @@
 body, html {
     margin: 0;
     padding: 0;
-    height: 100%;
     width: 100%;
+    height: 100%;
     overflow: hidden;
     background: var(--bg-dark);
     color: var(--text-light);
@@ -60,7 +61,7 @@ header {
     font-size: 1.1rem;
 }
 
-/* MAIN LAYOUT */
+/* MAIN */
 main {
     height: 78vh;
     display: grid;
@@ -76,62 +77,82 @@ main {
     min-height: 0;
 }
 
-.poster-box { min-height: 0; }
+/* LEFT IMAGE */
+.poster-box {
+    min-height: 0;
+}
 
+/* RIGHT COLUMN */
 .right-col {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    height: 100%;
     min-height: 0;
 }
 
+/* VIDEO */
 .video-box {
     flex: 3;
     background: #000;
-    min-height: 0;
 }
 
+/* LOWER PANELS */
 .bottom-split {
     flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
     min-height: 0;
-
-    /* BLACK LINE ABOVE PANELS */
-    border-top: 3px solid #000;
-    padding-top: 10px;
 }
 
-/* INFO PANELS */
+/* INFO PANEL */
 .info-panel {
     position: relative;
     padding: 12px;
     border-radius: 12px;
     overflow: hidden;
-    color: #fff;
+    color: white;
 }
 
-.info-panel h2 {
-    margin: 0 0 8px;
-    font-size: 1rem;
-}
-
-/* PRIMARY (LEFT) - NAVY + GOLD ACCENT */
+/* PRIMARY */
 .primary-panel {
-    background: linear-gradient(135deg, var(--navy) 80%, var(--gold) 20%);
+    background:
+    linear-gradient(
+        135deg,
+        var(--navy) 78%,
+        var(--gold) 22%
+    );
 }
 
-/* SECONDARY (RIGHT) - GOLD + NAVY ACCENT */
+/* SECONDARY */
 .secondary-panel {
-    background: linear-gradient(135deg, var(--gold) 80%, var(--navy) 20%);
+    background:
+    linear-gradient(
+        135deg,
+        var(--gold) 78%,
+        var(--navy) 22%
+    );
 }
 
-/* SCROLL SYSTEM */
+/* TITLES */
+.info-panel h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 900;
+}
+
+/* BLACK LINE */
+.panel-divider {
+    width: 100%;
+    height: 3px;
+    background: #000;
+    margin: 10px 0;
+}
+
+/* SCROLL AREA */
 .scroll-container {
     position: relative;
-    height: calc(100% - 25px);
+    height: calc(100% - 40px);
     overflow: hidden;
 }
 
@@ -141,15 +162,21 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
+
     animation: scrollUp 25s linear infinite;
 }
 
 @keyframes scrollUp {
-    0%   { transform: translateY(100%); }
-    100% { transform: translateY(-100%); }
+    0% {
+        transform: translateY(100%);
+    }
+
+    100% {
+        transform: translateY(-100%);
+    }
 }
 
-/* BULLETIN (FIXED) */
+/* BULLETIN */
 #news-bar {
     height: 8vh;
     background: var(--gold);
@@ -162,10 +189,11 @@ main {
     background: var(--navy);
     color: #fff;
     padding: 0 25px;
-    font-weight: 900;
-    font-size: 2rem;
+    height: 100%;
     display: flex;
     align-items: center;
+    font-weight: 900;
+    font-size: 2rem;
 }
 
 .marquee-container {
@@ -184,8 +212,13 @@ main {
 }
 
 @keyframes scroll {
-    from { transform: translateX(0%); }
-    to { transform: translateX(-100%); }
+    from {
+        transform: translateX(0%);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
 }
 
 /* MEDIA */
@@ -195,55 +228,78 @@ iframe, img {
     border: none;
     object-fit: cover;
 }
+
 </style>
 </head>
 
 <body>
 
 <header>
+
 <div class="school-name">
 Invictus International School<br>
-<span style="color: var(--gold); font-size: 2.5rem;">Horizon Hills</span>
+<span style="color: var(--gold); font-size: 2.5rem;">
+Horizon Hills
+</span>
 </div>
 
 <div class="clock-container">
 <div id="time">00:00</div>
 <div id="date">LOADING...</div>
 </div>
+
 </header>
 
 <main>
 
-<!-- IMAGE -->
+<!-- LEFT IMAGE -->
 <div class="card poster-box">
 <img id="slideshow" src="">
 </div>
 
-<!-- RIGHT SIDE -->
+<!-- RIGHT -->
 <div class="right-col">
 
-<!-- YOUTUBE -->
+<!-- VIDEO -->
 <div class="card video-box">
-<iframe id="yt-player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<iframe
+id="yt-player"
+allow="autoplay; encrypted-media"
+allowfullscreen>
+</iframe>
 </div>
 
-<!-- PANELS -->
+<!-- PRIMARY + SECONDARY -->
 <div class="bottom-split">
 
-<!-- PRIMARY LEFT -->
+<!-- PRIMARY -->
 <div class="info-panel primary-panel">
+
 <h2>PRIMARY</h2>
+
+<div class="panel-divider"></div>
+
 <div class="scroll-container">
-<div id="campus-updates" class="scroll-content">Loading...</div>
+<div id="campus-updates" class="scroll-content">
+Loading...
 </div>
 </div>
 
-<!-- SECONDARY RIGHT -->
-<div class="info-panel secondary-panel">
-<h2>SECONDARY</h2>
-<div class="scroll-container">
-<div id="student-highlights" class="scroll-content">Loading...</div>
 </div>
+
+<!-- SECONDARY -->
+<div class="info-panel secondary-panel">
+
+<h2>SECONDARY</h2>
+
+<div class="panel-divider"></div>
+
+<div class="scroll-container">
+<div id="student-highlights" class="scroll-content">
+Loading...
+</div>
+</div>
+
 </div>
 
 </div>
@@ -253,76 +309,116 @@ Invictus International School<br>
 
 <!-- BULLETIN -->
 <div id="news-bar">
-<div class="ticker-label">BULLETIN</div>
-<div class="marquee-container">
-<div id="marquee-text" class="marquee">Loading...</div>
+
+<div class="ticker-label">
+BULLETIN
 </div>
+
+<div class="marquee-container">
+<div id="marquee-text" class="marquee">
+Loading...
+</div>
+</div>
+
 </div>
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
 
 /* CLOCK */
 function clock() {
+
     const now = new Date();
+
     document.getElementById("time").innerText =
-        now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-    document.getElementById("date").innerText = now.toDateString();
+    now.toLocaleTimeString([], {
+        hour:'2-digit',
+        minute:'2-digit'
+    });
+
+    document.getElementById("date").innerText =
+    now.toDateString();
 }
 
 /* IMAGE */
 let slideshowInterval;
 
 async function refreshImages() {
+
     try {
+
         const res = await fetch(API_URL);
         const data = await res.json();
 
         if (data.images?.length) {
-            const img = document.getElementById("slideshow");
+
+            const img =
+            document.getElementById("slideshow");
 
             let i = 0;
+
             img.src = data.images[0];
 
             clearInterval(slideshowInterval);
 
             slideshowInterval = setInterval(() => {
+
                 i = (i + 1) % data.images.length;
+
                 img.src = data.images[i];
+
             }, 5000);
         }
-    } catch (e) {
+
+    } catch(e) {
+
         console.log("Image error", e);
     }
 }
 
 /* TEXT */
 async function refreshText() {
+
     try {
+
         const res = await fetch(API_URL);
         const data = await res.json();
 
         document.getElementById("campus-updates").innerHTML =
-            (data.notices || ["No updates"])
-            .map(n => `<div>▶ ${n}</div>`)
-            .join("");
+
+        (data.notices || ["No updates"])
+
+        .map(n => `<div>▶ ${n}</div>`)
+
+        .join("");
 
         document.getElementById("student-highlights").innerHTML =
-            (data.highlights || ["No highlights"])
-            .map(h => `<div>★ ${h}</div>`)
-            .join("");
 
-        /* BULLETIN FIX */
-        const el = document.getElementById("marquee-text");
-        const text = data.bulletin || "Welcome";
+        (data.highlights || ["No highlights"])
+
+        .map(h => `<div>★ ${h}</div>`)
+
+        .join("");
+
+        /* BULLETIN */
+        const el =
+        document.getElementById("marquee-text");
+
+        const text =
+        data.bulletin || "Welcome";
 
         el.innerText = text;
 
-        const speed = Math.max(12, text.length * 0.3);
-        el.style.animationDuration = speed + "s";
+        const speed =
+        Math.max(12, text.length * 0.3);
 
-    } catch (e) {
+        el.style.animationDuration =
+        speed + "s";
+
+    } catch(e) {
+
         console.log("Text error", e);
     }
 }
@@ -331,7 +427,9 @@ async function refreshText() {
 let videoLoaded = false;
 
 async function loadYouTube() {
+
     try {
+
         if (videoLoaded) return;
 
         const res = await fetch(API_URL);
@@ -339,30 +437,38 @@ async function loadYouTube() {
 
         if (data.videos?.length) {
 
-            const player = document.getElementById("yt-player");
+            const player =
+            document.getElementById("yt-player");
 
-            const playlist = data.videos.join(",");
-            const first = data.videos[0];
+            const playlist =
+            data.videos.join(",");
+
+            const first =
+            data.videos[0];
 
             player.src =
+
             `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
 
             videoLoaded = true;
         }
-    } catch (e) {
+
+    } catch(e) {
+
         console.log("YouTube error", e);
     }
 }
 
 /* START */
 clock();
+
 setInterval(clock, 1000);
 
 refreshText();
 refreshImages();
 loadYouTube();
 
-/* INTERVALS */
+/* REFRESH */
 setInterval(refreshText, 20000);
 setInterval(refreshImages, 300000);
 
