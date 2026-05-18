@@ -1,555 +1,446 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Invictus Live Signage</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invictus Live Signage</title>
+    <style>
+        :root {
+            --navy: #0f172a;
+            --gold: #f59e0b;
+            --bg: #020617;
+            --white: #f8fafc;
+            --soft: #e2e8f0;
+        }
 
-<style>
+        /* RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-:root{
-    --navy:#0f172a;
-    --gold:#f59e0b;
-    --bg:#020617;
-    --white:#f8fafc;
-    --soft:#e2e8f0;
-}
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            font-family: "Segoe UI", sans-serif;
+            color: var(--white);
+        }
 
-/* RESET */
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+        /* HEADER & BRANDING ALIGNMENT */
+        header {
+            height: 14vh;
+            background: linear-gradient(90deg, var(--navy), #1e293b);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 35px;
+            border-bottom: 5px solid var(--gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
 
-html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:var(--bg);
-    font-family:"Segoe UI",sans-serif;
-    color:var(--white);
-}
+        .header-brand-group {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            height: 100%;
+        }
 
-/* HEADER */
-header{
-    height:14vh;
-    background:linear-gradient(90deg,var(--navy),#1e293b);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 35px;
-    border-bottom:5px solid var(--gold);
-    box-shadow:0 4px 15px rgba(0,0,0,0.4);
-}
+        .school-logo {
+            height: 70%;
+            width: auto;
+            object-fit: contain;
+        }
 
-.school-name{
-    font-size:1.8rem;
-    font-weight:900;
-    letter-spacing:1px;
-    line-height:1.2;
-}
+        .school-name {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
 
-.school-name span{
-    color:var(--gold);
-    font-size:2.6rem;
-}
+        .school-name span {
+            color: var(--gold);
+            font-size: 2.6rem;
+        }
 
-.clock-container{
-    text-align:right;
-}
+        .clock-container {
+            text-align: right;
+        }
 
-#time{
-    font-size:3.8rem;
-    font-weight:900;
-    line-height:1;
-}
+        #time {
+            font-size: 3.8rem;
+            font-weight: 900;
+            line-height: 1;
+        }
 
-#date{
-    color:var(--gold);
-    font-size:1.1rem;
-    margin-top:5px;
-    letter-spacing:1px;
-}
+        #date {
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
 
-/* MAIN */
-main{
-    height:78vh;
-    display:grid;
-    grid-template-columns:1fr 1.6fr;
-    gap:16px;
-    padding:16px;
-}
+        /* MAIN SECTION */
+        main {
+            height: 78vh;
+            display: grid;
+            grid-template-columns: 1fr 1.6fr;
+            gap: 16px;
+            padding: 16px;
+        }
 
-/* GENERAL CARD */
-.card{
-    border-radius:18px;
-    overflow:hidden;
-    min-height:0;
-    background:#111827;
-    box-shadow:
-    0 10px 25px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.05);
-}
+        /* GENERAL CARD */
+        .card {
+            border-radius: 18px;
+            overflow: hidden;
+            min-height: 0;
+            background: #111827;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
 
-/* LEFT IMAGE */
-.poster-box{
-    position:relative;
-    border:2px solid rgba(255,255,255,0.08);
-}
+        /* LEFT IMAGE BOX */
+        .poster-box {
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.08);
+        }
 
-/* RIGHT COLUMN */
-.right-col{
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-    min-height:0;
-}
+        /* RIGHT SIDE WORKSPACE */
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-height: 0;
+        }
 
-/* VIDEO */
-.video-box{
-    flex:2.2;
-    background:#000;
-    border:2px solid rgba(255,255,255,0.08);
-}
+        /* VIDEO CANVAS */
+        .video-box {
+            flex: 2.2;
+            background: #000;
+            border: 2px solid rgba(255,255,255,0.08);
+        }
 
-/* LOWER PANELS */
-.bottom-split{
-    flex:1.6;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:18px;
-    min-height:0;
-}
+        /* LOWER INFO PANELS */
+        .bottom-split {
+            flex: 1.6;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            min-height: 0;
+        }
 
-/* PANELS */
-.info-panel{
-    position:relative;
-    overflow:hidden;
-    border-radius:18px;
-    padding:14px;
-    backdrop-filter:blur(6px);
-    border:2px solid rgba(255,255,255,0.08);
-    box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 10px 20px rgba(0,0,0,0.35);
-}
+        /* INFO CONTAINER MODULES */
+        .info-panel {
+            position: relative;
+            overflow: hidden;
+            border-radius: 18px;
+            padding: 14px;
+            backdrop-filter: blur(6px);
+            border: 2px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 10px 20px rgba(0,0,0,0.35);
+        }
 
-/* PRIMARY PANEL */
-.primary-panel{
-    background:
-    linear-gradient(
-        145deg,
-        #0f172a 0%,
-        #162238 65%,
-        #f59e0b 100%
-    );
-}
+        .primary-panel {
+            background: linear-gradient(145deg, #0f172a 0%, #162238 65%, #f59e0b 100%);
+        }
 
-/* SECONDARY PANEL */
-.secondary-panel{
-    background:
-    linear-gradient(
-        145deg,
-        #f59e0b 0%,
-        #d48a08 60%,
-        #0f172a 100%
-    );
-}
+        .secondary-panel {
+            background: linear-gradient(145deg, #f59e0b 0%, #d48a08 60%, #0f172a 100%);
+        }
 
-/* PANEL TITLE */
-.panel-header{
-    position:relative;
-    z-index:2;
-}
+        .panel-header {
+            position: relative;
+            z-index: 2;
+            height: 40px;
+        }
 
-.panel-header h2{
-    font-size:1.2rem;
-    font-weight:900;
-    letter-spacing:1px;
-    margin-bottom:10px;
-}
+        .panel-header h2 {
+            font-size: 1.2rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
 
-/* NICE BLACK LINE */
-.panel-divider{
-    width:100%;
-    height:4px;
-    border-radius:10px;
-    background:
-    linear-gradient(
-        90deg,
-        #000,
-        rgba(0,0,0,0.4)
-    );
-    margin-bottom:12px;
-}
+        .panel-divider {
+            width: 100%;
+            height: 4px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #000, rgba(0,0,0,0.4));
+        }
 
-/* SCROLL AREA */
-.scroll-container{
-    position:relative;
-    height:calc(100% - 50px);
-    overflow:hidden;
-}
+        /* SCROLL VIEWPORT HACKS */
+        .scroll-container {
+            position: relative;
+            height: calc(100% - 40px);
+            overflow: hidden;
+        }
 
-/* SCROLL TEXT */
-.scroll-content{
-    position:absolute;
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    font-size:1rem;
-    line-height:1.5;
-    font-weight:600;
+        .scroll-content {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 1rem;
+            line-height: 1.5;
+            font-weight: 600;
+        }
 
-    animation:scrollUp 35s linear infinite;
-}
+        .scroll-content div {
+            background: rgba(255,255,255,0.12);
+            padding: 10px 12px;
+            border-radius: 12px;
+            backdrop-filter: blur(3px);
+            border-left: 4px solid rgba(255,255,255,0.7);
+        }
 
-.scroll-content div{
-    background:rgba(255,255,255,0.12);
-    padding:10px 12px;
-    border-radius:12px;
-    backdrop-filter:blur(3px);
-    border-left:4px solid rgba(255,255,255,0.7);
-}
+        /* AUTO SMOOTH DIRECTIONAL ALTERNATING PAN BOUNCE */
+        @keyframes dynamicScrollUp {
+            0% { transform: translateY(5px); }
+            8% { transform: translateY(5px); }
+            92% { transform: translateY(calc(-100% + 140px)); }
+            100% { transform: translateY(calc(-100% + 140px)); }
+        }
 
-/* SCROLL ANIMATION */
-@keyframes scrollUp{
-    0%{
-        transform:translateY(100%);
-    }
+        /* TICKER BULLETIN BAR */
+        #news-bar {
+            height: 8vh;
+            display: flex;
+            align-items: center;
+            background: var(--gold);
+            overflow: hidden;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.35);
+        }
 
-    100%{
-        transform:translateY(-100%);
-    }
-}
+        .ticker-label {
+            height: 100%;
+            background: var(--navy);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 28px;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            z-index: 5;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.3);
+        }
 
-/* BULLETIN */
-#news-bar{
-    height:8vh;
-    display:flex;
-    align-items:center;
-    background:var(--gold);
-    overflow:hidden;
-    box-shadow:0 -4px 15px rgba(0,0,0,0.35);
-}
+        .marquee-container {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
 
-/* BULLETIN LABEL */
-.ticker-label{
-    height:100%;
-    background:var(--navy);
-    color:white;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:0 28px;
-    font-size:2rem;
-    font-weight:900;
-    letter-spacing:1px;
-    box-shadow:4px 0 10px rgba(0,0,0,0.3);
-}
+        .marquee {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #000;
+            animation: scroll linear infinite;
+        }
 
-/* BULLETIN SCROLL */
-.marquee-container{
-    flex:1;
-    overflow:hidden;
-    position:relative;
-}
+        @keyframes scroll {
+            from { transform: translateX(0%); }
+            to { transform: translateX(-100%); }
+        }
 
-.marquee{
-    display:inline-block;
-    white-space:nowrap;
-    padding-left:100%;
-    font-size:1.8rem;
-    font-weight:800;
-    color:#000;
+        /* FALLBACKS */
+        iframe, img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: none;
+        }
 
-    animation:scroll linear infinite;
-}
-
-@keyframes scroll{
-    from{
-        transform:translateX(0%);
-    }
-
-    to{
-        transform:translateX(-100%);
-    }
-}
-
-/* MEDIA */
-iframe,
-img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    border:none;
-}
-
-/* SMALL GLOW EFFECT */
-.primary-panel::before,
-.secondary-panel::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:
-    radial-gradient(
-        circle at top right,
-        rgba(255,255,255,0.18),
-        transparent 45%
-    );
-    pointer-events:none;
-}
-
-</style>
+        .primary-panel::before, .secondary-panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.18), transparent 45%);
+            pointer-events: none;
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- HEADER -->
-<header>
+    <!-- MAIN SYSTEM HEADER -->
+    <header>
+        <div class="header-brand-group">
+            <!-- GOOGLE DRIVE DIRECT WEB LINK COMPATIBILITY ATTACHED BELOW -->
+            <img class="school-logo" src="https://drive.google.com/file/d/1ypVlwlie0XIVA7naS4gsNAVxEu4BAzq4/view?usp=drive_link" alt="School Logo" />
+            <div class="school-name">
+                Invictus International School<br>
+                <span>Horizon Hills</span>
+            </div>
+        </div>
+        <div class="clock-container">
+            <div id="time">00:00</div>
+            <div id="date">LOADING...</div>
+        </div>
+    </header>
 
-<div class="school-name">
-Invictus International School<br>
-<span>Horizon Hills</span>
-</div>
+    <!-- CONTENT MODULE LAYOUT -->
+    <main>
+        <div class="card poster-box">
+            <!-- Inline blank transparent fallback pixel prevents broken browser image boxes during boot network handshakes -->
+            <img id="slideshow" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Signage Banner" />
+        </div>
 
-<div class="clock-container">
-<div id="time">00:00</div>
-<div id="date">LOADING...</div>
-</div>
+        <div class="right-col">
+            <div class="card video-box">
+                <iframe id="yt-player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
 
-</header>
+            <div class="bottom-split">
+                <div class="info-panel primary-panel">
+                    <div class="panel-header">
+                        <h2>PRIMARY</h2>
+                        <div class="panel-divider"></div>
+                    </div>
+                    <div class="scroll-container">
+                        <div id="campus-updates" class="scroll-content">Loading...</div>
+                    </div>
+                </div>
 
-<!-- MAIN -->
-<main>
+                <div class="info-panel secondary-panel">
+                    <div class="panel-header">
+                        <h2>SECONDARY</h2>
+                        <div class="panel-divider"></div>
+                    </div>
+                    <div class="scroll-container">
+                        <div id="student-highlights" class="scroll-content">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-<!-- LEFT IMAGE -->
-<div class="card poster-box">
-<img id="slideshow" src="" />
-</div>
+    <!-- BANNER FOOTER -->
+    <div id="news-bar">
+        <div class="ticker-label">BULLETIN</div>
+        <div class="marquee-container">
+            <div id="marquee-text" class="marquee">Loading...</div>
+        </div>
+    </div>
 
-<!-- RIGHT SIDE -->
-<div class="right-col">
+    <!-- ENGINE OPERATIONS MANAGEMENT CORE -->
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
+        
+        let displayImagesList = [];
+        let networkBufferImagesList = [];
+        let slideshowPointerIndex = 0;
+        let videoLoaded = false;
 
-<!-- VIDEO -->
-<div class="card video-box">
-<iframe
-id="yt-player"
-allow="autoplay; encrypted-media"
-allowfullscreen>
-</iframe>
-</div>
-
-<!-- PANELS -->
-<div class="bottom-split">
-
-<!-- PRIMARY -->
-<div class="info-panel primary-panel">
-
-<div class="panel-header">
-<h2>PRIMARY</h2>
-<div class="panel-divider"></div>
-</div>
-
-<div class="scroll-container">
-<div id="campus-updates" class="scroll-content">
-Loading...
-</div>
-</div>
-
-</div>
-
-<!-- SECONDARY -->
-<div class="info-panel secondary-panel">
-
-<div class="panel-header">
-<h2>SECONDARY</h2>
-<div class="panel-divider"></div>
-</div>
-
-<div class="scroll-container">
-<div id="student-highlights" class="scroll-content">
-Loading...
-</div>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</main>
-
-<!-- BULLETIN -->
-<div id="news-bar">
-
-<div class="ticker-label">
-BULLETIN
-</div>
-
-<div class="marquee-container">
-<div id="marquee-text" class="marquee">
-Loading...
-</div>
-</div>
-
-</div>
-
-<script>
-
-const API_URL =
-"https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
-
-/* CLOCK */
-function clock(){
-
-    const now = new Date();
-
-    document.getElementById("time").innerText =
-    now.toLocaleTimeString([],{
-        hour:"2-digit",
-        minute:"2-digit"
-    });
-
-    document.getElementById("date").innerText =
-    now.toDateString();
-}
-
-/* IMAGE SYSTEM */
-let slideshowInterval;
-
-async function refreshImages(){
-
-    try{
-
-        const res = await fetch(API_URL);
-        const data = await res.json();
-
-        if(data.images?.length){
-
-            const img =
-            document.getElementById("slideshow");
-
-            let i = 0;
-
-            img.src = data.images[0];
-
-            clearInterval(slideshowInterval);
-
-            slideshowInterval = setInterval(()=>{
-
-                i = (i + 1) % data.images.length;
-
-                img.src = data.images[i];
-
-            },5000);
+        /* PERSISTENT RUNTIME CLOCK MECHANISM */
+        function clock(){
+            const now = new Date();
+            document.getElementById("time").innerText = now.toLocaleTimeString([],{ hour:"2-digit", minute:"2-digit" });
+            document.getElementById("date").innerText = now.toDateString();
         }
 
-    }catch(e){
+        /* REWRITTEN HIGH-DENSITY PACKET CORE ENGINE */
+        async function fetchSynchronizedSignageData() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                if (!data) return;
 
-        console.log("Image error",e);
-    }
-}
+                // 1. Stage images inside the background network memory buffer safely
+                if (data.images && data.images.length > 0) {
+                    networkBufferImagesList = data.images;
+                    
+                    // Boot up display engine layout instantly if initial array is completely empty
+                    if (displayImagesList.length === 0) {
+                        displayImagesList = [...networkBufferImagesList];
+                        initializeSlideshowLoop();
+                    }
+                }
 
-/* TEXT */
-async function refreshText(){
+                // 2. Process Primary Notice Feeds
+                const primaryContainer = document.getElementById("campus-updates");
+                primaryContainer.innerHTML = (data.notices || ["No updates"]).map(notice => `<div>▶ ${notice}</div>`).join("");
+                computeLayoutOverflow(primaryContainer);
 
-    try{
+                // 3. Process Secondary Notice Feeds
+                const secondaryContainer = document.getElementById("student-highlights");
+                secondaryContainer.innerHTML = (data.highlights || ["No highlights"]).map(highlight => `<div>★ ${highlight}</div>`).join("");
+                computeLayoutOverflow(secondaryContainer);
 
-        const res = await fetch(API_URL);
-        const data = await res.json();
+                // 4. Process Ticker Text Stream
+                const marqueeContainer = document.getElementById("marquee-text");
+                const footerTickerText = data.bulletin || "Welcome to Invictus International School";
+                marqueeContainer.innerText = footerTickerText;
+                marqueeContainer.style.animationDuration = Math.max(15, footerTickerText.length * 0.25) + "s";
 
-        /* PRIMARY */
-        document.getElementById("campus-updates").innerHTML =
+                // 5. Process YouTube Stream Engine Core (Autoplay + Muted Active Parameters Applied Below)
+                if (data.videos && data.videos.length > 0 && !videoLoaded) {
+                    const iframePlayer = document.getElementById("yt-player");
+                    const baselineVideoToken = data.videos;
+                    const combinedPlaylistTokens = data.videos.join(",");
+                    
+                    iframePlayer.src = `https://www.youtube.com/embed/${baselineVideoToken}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${combinedPlaylistTokens}`;
+                    videoLoaded = true;
+                }
 
-        (data.notices || ["No updates"])
-
-        .map(n => `<div>▶ ${n}</div>`)
-
-        .join("");
-
-        /* SECONDARY */
-        document.getElementById("student-highlights").innerHTML =
-
-        (data.highlights || ["No highlights"])
-
-        .map(h => `<div>★ ${h}</div>`)
-
-        .join("");
-
-        /* BULLETIN */
-        const el =
-        document.getElementById("marquee-text");
-
-        const text =
-        data.bulletin || "Welcome to Invictus International School";
-
-        el.innerText = text;
-
-        /* AUTO SPEED */
-        const speed =
-        Math.max(15, text.length * 0.35);
-
-        el.style.animationDuration =
-        speed + "s";
-
-    }catch(e){
-
-        console.log("Text error",e);
-    }
-}
-
-/* YOUTUBE */
-let videoLoaded = false;
-
-async function loadYouTube(){
-
-    try{
-
-        if(videoLoaded) return;
-
-        const res = await fetch(API_URL);
-        const data = await res.json();
-
-        if(data.videos?.length){
-
-            const player =
-            document.getElementById("yt-player");
-
-            const playlist =
-            data.videos.join(",");
-
-            const first =
-            data.videos[0];
-
-            player.src =
-
-            `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
-
-            videoLoaded = true;
+            } catch (error) {
+                console.error("Signage background processing system failure:", error);
+            }
         }
 
-    }catch(e){
+        /* RECOUPLED ENGINE CYCLE: Swaps background memory buffer only after completing entire cycle */
+        function initializeSlideshowLoop() {
+            const imageDisplayNode = document.getElementById("slideshow");
+            
+            if (displayImagesList.length > 0) {
+                imageDisplayNode.src = displayImagesList[slideshowPointerIndex];
+            }
 
-        console.log("YouTube error",e);
-    }
-}
+            setInterval(() => {
+                if (displayImagesList.length === 0) return;
 
-/* START */
-clock();
+                slideshowPointerIndex++;
 
-setInterval(clock,1000);
+                // If image loop cycle completes, inject newest spreadsheet adjustments from memory array buffer safely
+                if (slideshowPointerIndex >= displayImagesList.length) {
+                    if (networkBufferImagesList.length > 0) {
+                        displayImagesList = [...networkBufferImagesList];
+                    }
+                    slideshowPointerIndex = 0;
+                }
 
-refreshText();
-refreshImages();
-loadYouTube();
+                imageDisplayNode.src = displayImagesList[slideshowPointerIndex];
+            }, 5000);
+        }
 
-/* AUTO REFRESH */
-setInterval(refreshText,20000);
-setInterval(refreshImages,300000);
+        /* SMART FRAME CALCULATOR: Restricts animation engines if strings fit text boundaries natively */
+        function computeLayoutOverflow(element) {
+            const visibleBoundaryBoxHeight = element.parentElement.clientHeight;
+            const fullContentRenderingHeight = element.scrollHeight;
+            
+            if (fullContentRenderingHeight > visibleBoundaryBoxHeight) {
+                element.style.animation = "dynamicScrollUp 25s ease-in-out infinite alternate";
+            } else {
+                element.style.animation = "none";
+            }
+        }
 
-</script>
-
+        /* SYSTEM INITIALIZATION PIPELINE */
+        clock();
+        setInterval(clock, 1000);
+        
+        // Initial Execute Call
+        fetchSynchronizedSignageData();
+        
+        // Network polling ticks precisely once every 60 seconds
+        setInterval(fetchSynchronizedSignageData, 60000);
+    </script>
 </body>
 </html>
