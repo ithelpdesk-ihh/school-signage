@@ -3,551 +3,717 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>Invictus Live Signage</title>
 
 <style>
-
-:root{
-    --navy:#0f172a;
-    --gold:#f59e0b;
-    --bg:#020617;
-    --white:#f8fafc;
-    --soft:#e2e8f0;
-}
-
-/* RESET */
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:var(--bg);
-    font-family:"Segoe UI",sans-serif;
-    color:var(--white);
-}
-
-/* HEADER */
-header{
-    height:14vh;
-    background:linear-gradient(90deg,var(--navy),#1e293b);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 35px;
-    border-bottom:5px solid var(--gold);
-    box-shadow:0 4px 15px rgba(0,0,0,0.4);
-}
-
-.school-name{
-    font-size:1.8rem;
-    font-weight:900;
-    letter-spacing:1px;
-    line-height:1.2;
-}
-
-.school-name span{
-    color:var(--gold);
-    font-size:2.6rem;
-}
-
-.clock-container{
-    text-align:right;
-}
-
-#time{
-    font-size:3.8rem;
-    font-weight:900;
-    line-height:1;
-}
-
-#date{
-    color:var(--gold);
-    font-size:1.1rem;
-    margin-top:5px;
-    letter-spacing:1px;
-}
-
-/* MAIN */
-main{
-    height:78vh;
-    display:grid;
-    grid-template-columns:1fr 1.6fr;
-    gap:16px;
-    padding:16px;
-}
-
-/* GENERAL CARD */
-.card{
-    border-radius:18px;
-    overflow:hidden;
-    min-height:0;
-    background:#111827;
-    box-shadow:
-    0 10px 25px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.05);
-}
-
-/* LEFT IMAGE */
-.poster-box{
-    position:relative;
-    border:2px solid rgba(255,255,255,0.08);
-}
-
-/* RIGHT COLUMN */
-.right-col{
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-    min-height:0;
-}
-
-/* VIDEO */
-.video-box{
-    flex:2.2;
-    background:#000;
-    border:2px solid rgba(255,255,255,0.08);
-}
-
-/* LOWER PANELS */
-.bottom-split{
-    flex:1.6;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:18px;
-    min-height:0;
-}
-
-/* PANELS */
-.info-panel{
-    position:relative;
-    overflow:hidden;
-    border-radius:18px;
-    padding:14px;
-    backdrop-filter:blur(6px);
-    border:2px solid rgba(255,255,255,0.08);
-    box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 10px 20px rgba(0,0,0,0.35);
-}
-
-/* PRIMARY PANEL */
-.primary-panel{
-    background:
-    linear-gradient(
-        145deg,
-        #0f172a 0%,
-        #162238 65%,
-        #f59e0b 100%
-    );
-}
-
-/* SECONDARY PANEL */
-.secondary-panel{
-    background:
-    linear-gradient(
-        145deg,
-        #f59e0b 0%,
-        #d48a08 60%,
-        #0f172a 100%
-    );
-}
-
-/* PANEL TITLE */
-.panel-header{
-    position:relative;
-    z-index:2;
-}
-
-.panel-header h2{
-    font-size:1.2rem;
-    font-weight:900;
-    letter-spacing:1px;
-    margin-bottom:10px;
-}
-
-/* NICE BLACK LINE */
-.panel-divider{
-    width:100%;
-    height:4px;
-    border-radius:10px;
-    background:
-    linear-gradient(
-        90deg,
-        #000,
-        rgba(0,0,0,0.4)
-    );
-    margin-bottom:12px;
-}
-
-/* SCROLL AREA */
-.scroll-container{
-    position:relative;
-    height:calc(100% - 50px);
-    overflow:hidden;
-}
-
-/* SCROLL TEXT */
-.scroll-content{
-    position:absolute;
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    font-size:1rem;
-    line-height:1.5;
-    font-weight:600;
-
-    animation:scrollUp 35s linear infinite;
-}
-
-.scroll-content div{
-    background:rgba(255,255,255,0.12);
-    padding:10px 12px;
-    border-radius:12px;
-    backdrop-filter:blur(3px);
-    border-left:4px solid rgba(255,255,255,0.7);
-}
-
-/* SCROLL ANIMATION */
-@keyframes scrollUp{
-    0%{
-        transform:translateY(100%);
+    :root{
+        --navy:#0f172a;
+        --gold:#f59e0b;
+        --bg:#020617;
+        --white:#f8fafc;
     }
 
-    100%{
-        transform:translateY(-100%);
-    }
-}
-
-/* BULLETIN */
-#news-bar{
-    height:8vh;
-    display:flex;
-    align-items:center;
-    background:var(--gold);
-    overflow:hidden;
-    box-shadow:0 -4px 15px rgba(0,0,0,0.35);
-}
-
-/* BULLETIN LABEL */
-.ticker-label{
-    height:100%;
-    background:var(--navy);
-    color:white;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:0 28px;
-    font-size:2rem;
-    font-weight:900;
-    letter-spacing:1px;
-    box-shadow:4px 0 10px rgba(0,0,0,0.3);
-}
-
-/* BULLETIN SCROLL */
-.marquee-container{
-    flex:1;
-    overflow:hidden;
-    position:relative;
-}
-
-.marquee{
-    display:inline-block;
-    white-space:nowrap;
-    padding-left:100%;
-    font-size:1.8rem;
-    font-weight:800;
-    color:#000;
-
-    animation:scroll linear infinite;
-}
-
-@keyframes scroll{
-    from{
-        transform:translateX(0%);
+    /* RESET */
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
     }
 
-    to{
-        transform:translateX(-100%);
+    html,body{
+        width:100%;
+        height:100%;
+        overflow:hidden;
+        background:var(--bg);
+        font-family:"Segoe UI",sans-serif;
+        color:var(--white);
     }
-}
 
-/* MEDIA */
-iframe,
-img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    border:none;
-}
+    body{
+        animation:antiBurn 120s infinite alternate;
+    }
 
-/* SMALL GLOW EFFECT */
-.primary-panel::before,
-.secondary-panel::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:
-    radial-gradient(
-        circle at top right,
-        rgba(255,255,255,0.18),
-        transparent 45%
-    );
-    pointer-events:none;
-}
+    @keyframes antiBurn{
+        0%{transform:translate(0px,0px);}
+        25%{transform:translate(1px,0px);}
+        50%{transform:translate(0px,1px);}
+        75%{transform:translate(-1px,0px);}
+        100%{transform:translate(0px,-1px);}
+    }
 
+    /* HEADER */
+    header{
+        height:14vh;
+        background:linear-gradient(90deg,var(--navy),#1e293b);
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        padding:0 35px;
+        border-bottom:5px solid var(--gold);
+        box-shadow:0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    .header-brand-group{
+        display:flex;
+        align-items:center;
+        gap:22px;
+        height:100%;
+    }
+
+    .school-logo{
+        height:70%;
+        width:auto;
+        object-fit:contain;
+    }
+
+    .school-name{
+        font-size:1.8rem;
+        font-weight:900;
+        line-height:1.2;
+        letter-spacing:1px;
+    }
+
+    .school-name span{
+        color:var(--gold);
+        font-size:2.6rem;
+    }
+
+    .clock-container{
+        text-align:right;
+    }
+
+    #time{
+        font-size:3.8rem;
+        font-weight:900;
+        line-height:1;
+    }
+
+    #date{
+        color:var(--gold);
+        font-size:1.1rem;
+        margin-top:5px;
+        letter-spacing:1px;
+    }
+
+    /* MAIN */
+    main{
+        height:78vh;
+        display:grid;
+        grid-template-columns:1fr 1.6fr;
+        gap:16px;
+        padding:16px;
+    }
+
+    .card{
+        border-radius:18px;
+        overflow:hidden;
+        min-height:0;
+        background:#111827;
+        box-shadow:
+            0 10px 25px rgba(0,0,0,0.45),
+            inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+    /* POSTER */
+    .poster-box{
+        position:relative;
+        border:2px solid rgba(255,255,255,0.08);
+        background:#000;
+    }
+
+    #slideshow{
+        width:100%;
+        height:100%;
+        object-fit:contain;
+        background:#000;
+        transition:opacity 0.8s ease;
+        opacity:1;
+    }
+
+    /* RIGHT */
+    .right-col{
+        display:flex;
+        flex-direction:column;
+        gap:16px;
+        min-height:0;
+    }
+
+    .video-box{
+        flex:2.2;
+        background:#000;
+        border:2px solid rgba(255,255,255,0.08);
+    }
+
+    .bottom-split{
+        flex:1.6;
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:18px;
+        min-height:0;
+    }
+
+    /* PANELS */
+    .info-panel{
+        position:relative;
+        overflow:hidden;
+        border-radius:18px;
+        padding:14px;
+        border:2px solid rgba(255,255,255,0.08);
+        background:rgba(15,23,42,0.94);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.08),
+            0 10px 20px rgba(0,0,0,0.35);
+    }
+
+    .primary-panel{
+        background:
+            linear-gradient(
+                145deg,
+                #0f172a 0%,
+                #162238 65%,
+                #f59e0b 100%
+            );
+    }
+
+    .secondary-panel{
+        background:
+            linear-gradient(
+                145deg,
+                #f59e0b 0%,
+                #d48a08 60%,
+                #0f172a 100%
+            );
+    }
+
+    .panel-header{
+        position:relative;
+        z-index:2;
+        height:40px;
+    }
+
+    .panel-header h2{
+        font-size:1.2rem;
+        font-weight:900;
+        letter-spacing:1px;
+        margin-bottom:4px;
+    }
+
+    .panel-divider{
+        width:100%;
+        height:4px;
+        border-radius:10px;
+        background:linear-gradient(
+            90deg,
+            #000,
+            rgba(0,0,0,0.4)
+        );
+    }
+
+    .scroll-container{
+        position:relative;
+        height:calc(100% - 40px);
+        overflow:hidden;
+    }
+
+    .scroll-content{
+        position:absolute;
+        width:100%;
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+        font-size:1rem;
+        line-height:1.5;
+        font-weight:600;
+        will-change:transform;
+    }
+
+    .scroll-content div{
+        background:rgba(255,255,255,0.12);
+        padding:10px 12px;
+        border-radius:12px;
+        border-left:4px solid rgba(255,255,255,0.7);
+    }
+
+    /* TICKER */
+    #news-bar{
+        height:8vh;
+        display:flex;
+        align-items:center;
+        background:var(--gold);
+        overflow:hidden;
+        box-shadow:0 -4px 15px rgba(0,0,0,0.35);
+    }
+
+    .ticker-label{
+        height:100%;
+        background:var(--navy);
+        color:white;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:0 28px;
+        font-size:2rem;
+        font-weight:900;
+        letter-spacing:1px;
+        z-index:5;
+    }
+
+    .marquee-container{
+        flex:1;
+        overflow:hidden;
+        position:relative;
+    }
+
+    .marquee{
+        display:inline-block;
+        white-space:nowrap;
+        padding-left:100%;
+        font-size:1.8rem;
+        font-weight:800;
+        color:#000;
+        animation:scroll linear infinite;
+    }
+
+    @keyframes scroll{
+        from{
+            transform:translateX(0%);
+        }
+        to{
+            transform:translateX(-100%);
+        }
+    }
+
+    iframe,img{
+        border:none;
+    }
+
+    .primary-panel::before,
+    .secondary-panel::before{
+        content:"";
+        position:absolute;
+        inset:0;
+        background:
+            radial-gradient(
+                circle at top right,
+                rgba(255,255,255,0.18),
+                transparent 45%
+            );
+        pointer-events:none;
+    }
+
+    /* PORTRAIT SAFETY */
+    @media (orientation:portrait){
+        body::before{
+            content:"PLEASE ROTATE DISPLAY";
+            position:fixed;
+            inset:0;
+            background:#000;
+            color:#fff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:3rem;
+            z-index:9999;
+        }
+    }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <header>
 
-<div class="school-name">
-Invictus International School<br>
-<span>Horizon Hills</span>
-</div>
+    <div class="header-brand-group">
 
-<div class="clock-container">
-<div id="time">00:00</div>
-<div id="date">LOADING...</div>
-</div>
+        <img
+            class="school-logo"
+            src="https://googleusercontent.com"
+            alt="School Logo"
+        />
+
+        <div class="school-name">
+            Invictus International School<br>
+            <span>Horizon Hills</span>
+        </div>
+
+    </div>
+
+    <div class="clock-container">
+        <div id="time">00:00</div>
+        <div id="date">Loading...</div>
+    </div>
 
 </header>
 
-<!-- MAIN -->
 <main>
 
-<!-- LEFT IMAGE -->
-<div class="card poster-box">
-<img id="slideshow" src="" />
-</div>
+    <!-- LEFT POSTER -->
+    <div class="card poster-box">
 
-<!-- RIGHT SIDE -->
-<div class="right-col">
+        <img
+            id="slideshow"
+            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+            alt="Signage Banner"
+        />
 
-<!-- VIDEO -->
-<div class="card video-box">
-<iframe
-id="yt-player"
-allow="autoplay; encrypted-media"
-allowfullscreen>
-</iframe>
-</div>
+    </div>
 
-<!-- PANELS -->
-<div class="bottom-split">
+    <!-- RIGHT -->
+    <div class="right-col">
 
-<!-- PRIMARY -->
-<div class="info-panel primary-panel">
+        <!-- VIDEO -->
+        <div class="card video-box">
 
-<div class="panel-header">
-<h2>PRIMARY</h2>
-<div class="panel-divider"></div>
-</div>
+            <iframe
+                id="yt-player"
+                allow="autoplay; encrypted-media"
+                allowfullscreen>
+            </iframe>
 
-<div class="scroll-container">
-<div id="campus-updates" class="scroll-content">
-Loading...
-</div>
-</div>
+        </div>
 
-</div>
+        <!-- LOWER PANELS -->
+        <div class="bottom-split">
 
-<!-- SECONDARY -->
-<div class="info-panel secondary-panel">
+            <!-- PRIMARY -->
+            <div class="info-panel primary-panel">
 
-<div class="panel-header">
-<h2>SECONDARY</h2>
-<div class="panel-divider"></div>
-</div>
+                <div class="panel-header">
+                    <h2>PRIMARY</h2>
+                    <div class="panel-divider"></div>
+                </div>
 
-<div class="scroll-container">
-<div id="student-highlights" class="scroll-content">
-Loading...
-</div>
-</div>
+                <div class="scroll-container">
+                    <div id="campus-updates" class="scroll-content">
+                        Loading...
+                    </div>
+                </div>
 
-</div>
+            </div>
 
-</div>
-</div>
+            <!-- SECONDARY -->
+            <div class="info-panel secondary-panel">
+
+                <div class="panel-header">
+                    <h2>SECONDARY</h2>
+                    <div class="panel-divider"></div>
+                </div>
+
+                <div class="scroll-container">
+                    <div id="student-highlights" class="scroll-content">
+                        Loading...
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </main>
 
-<!-- BULLETIN -->
+<!-- FOOTER -->
 <div id="news-bar">
 
-<div class="ticker-label">
-BULLETIN
-</div>
+    <div class="ticker-label">
+        BULLETIN
+    </div>
 
-<div class="marquee-container">
-<div id="marquee-text" class="marquee">
-Loading...
-</div>
-</div>
+    <div class="marquee-container">
+
+        <div id="marquee-text" class="marquee">
+            Loading...
+        </div>
+
+    </div>
 
 </div>
 
 <script>
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
+    /* CONFIG */
+    const API_URL =
+        "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
 
-/* CLOCK */
-function clock(){
+    const FALLBACK_IMAGE =
+        "https://via.placeholder.com/1920x1080?text=Invictus+Signage";
 
-    const now = new Date();
+    /* STATE */
+    let displayImagesList = [];
+    let networkBufferImagesList = [];
+    let slideshowPointerIndex = 0;
+    let slideshowInitialized = false;
+    let videoLoaded = false;
 
-    document.getElementById("time").innerText =
-    now.toLocaleTimeString([],{
-        hour:"2-digit",
-        minute:"2-digit"
-    });
+    /* SANITIZER */
+    function sanitize(text) {
 
-    document.getElementById("date").innerText =
-    now.toDateString();
-}
+        const div = document.createElement("div");
+        div.innerText = text;
 
-/* IMAGE SYSTEM */
-let slideshowInterval;
+        return div.innerHTML;
+    }
 
-async function refreshImages(){
+    /* CLOCK */
+    function clock() {
 
-    try{
+        const now = new Date();
 
-        const res = await fetch(API_URL);
-        const data = await res.json();
+        document.getElementById("time").innerText =
+            now.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
 
-        if(data.images?.length){
+        document.getElementById("date").innerText =
+            now.toLocaleDateString([], {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            });
+    }
 
-            const img =
+    /* FETCH DATA */
+    async function fetchSynchronizedSignageData() {
+
+        try {
+
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                throw new Error("Network response failure");
+            }
+
+            const data = await response.json();
+
+            if (!data) return;
+
+            /* IMAGES */
+            if (Array.isArray(data.images) && data.images.length > 0) {
+
+                networkBufferImagesList = [...data.images];
+
+                /* PRELOAD */
+                networkBufferImagesList.forEach(src => {
+
+                    const img = new Image();
+                    img.src = src;
+                });
+
+                if (!slideshowInitialized) {
+
+                    displayImagesList = [...networkBufferImagesList];
+
+                    initializeSlideshowLoop();
+
+                    slideshowInitialized = true;
+                }
+            }
+
+            /* PRIMARY */
+            const primaryContainer =
+                document.getElementById("campus-updates");
+
+            primaryContainer.innerHTML =
+                (data.notices || ["No updates"])
+                .map(
+                    notice =>
+                    `<div>▶ ${sanitize(notice)}</div>`
+                )
+                .join("");
+
+            computeLayoutOverflow(primaryContainer);
+
+            /* SECONDARY */
+            const secondaryContainer =
+                document.getElementById("student-highlights");
+
+            secondaryContainer.innerHTML =
+                (data.highlights || ["No highlights"])
+                .map(
+                    item =>
+                    `<div>★ ${sanitize(item)}</div>`
+                )
+                .join("");
+
+            computeLayoutOverflow(secondaryContainer);
+
+            /* TICKER */
+            const marquee =
+                document.getElementById("marquee-text");
+
+            const bulletin =
+                data.bulletin ||
+                "Welcome to Invictus International School";
+
+            marquee.innerText = bulletin;
+
+            marquee.style.animationDuration =
+                Math.max(15, bulletin.length * 0.25) + "s";
+
+            /* VIDEO */
+            if (
+                Array.isArray(data.videos) &&
+                data.videos.length > 0 &&
+                !videoLoaded
+            ) {
+
+                const iframe =
+                    document.getElementById("yt-player");
+
+                const firstVideo =
+                    data.videos[0];
+
+                const playlist =
+                    data.videos.join(",");
+
+                iframe.src =
+                    `https://www.youtube.com/embed/${firstVideo}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
+
+                videoLoaded = true;
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Signage Engine Failure:",
+                error
+            );
+
+            document.getElementById("marquee-text").innerText =
+                "NETWORK ERROR - RETRYING CONNECTION";
+        }
+    }
+
+    /* SLIDESHOW */
+    function initializeSlideshowLoop() {
+
+        const imageDisplayNode =
             document.getElementById("slideshow");
 
-            let i = 0;
+        imageDisplayNode.onerror = () => {
+            imageDisplayNode.src = FALLBACK_IMAGE;
+        };
 
-            img.src = data.images[0];
+        if (displayImagesList.length > 0) {
 
-            clearInterval(slideshowInterval);
-
-            slideshowInterval = setInterval(()=>{
-
-                i = (i + 1) % data.images.length;
-
-                img.src = data.images[i];
-
-            },5000);
+            imageDisplayNode.src =
+                displayImagesList[slideshowPointerIndex];
         }
 
-    }catch(e){
+        setInterval(() => {
 
-        console.log("Image error",e);
+            if (displayImagesList.length === 0) return;
+
+            slideshowPointerIndex++;
+
+            if (
+                slideshowPointerIndex >=
+                displayImagesList.length
+            ) {
+
+                if (networkBufferImagesList.length > 0) {
+
+                    displayImagesList =
+                        [...networkBufferImagesList];
+                }
+
+                slideshowPointerIndex = 0;
+            }
+
+            imageDisplayNode.style.opacity = 0;
+
+            setTimeout(() => {
+
+                imageDisplayNode.src =
+                    displayImagesList[
+                        slideshowPointerIndex
+                    ];
+
+                imageDisplayNode.style.opacity = 1;
+
+            }, 400);
+
+        }, 5000);
     }
-}
 
-/* TEXT */
-async function refreshText(){
+    /* SCROLL ENGINE */
+    function computeLayoutOverflow(element) {
 
-    try{
+        const containerHeight =
+            element.parentElement.clientHeight;
 
-        const res = await fetch(API_URL);
-        const data = await res.json();
+        const contentHeight =
+            element.scrollHeight;
 
-        /* PRIMARY */
-        document.getElementById("campus-updates").innerHTML =
+        /* RESET */
+        element.style.animation = "none";
 
-        (data.notices || ["No updates"])
-
-        .map(n => `<div>▶ ${n}</div>`)
-
-        .join("");
-
-        /* SECONDARY */
-        document.getElementById("student-highlights").innerHTML =
-
-        (data.highlights || ["No highlights"])
-
-        .map(h => `<div>★ ${h}</div>`)
-
-        .join("");
-
-        /* BULLETIN */
-        const el =
-        document.getElementById("marquee-text");
-
-        const text =
-        data.bulletin || "Welcome to Invictus International School";
-
-        el.innerText = text;
-
-        /* AUTO SPEED */
-        const speed =
-        Math.max(15, text.length * 0.35);
-
-        el.style.animationDuration =
-        speed + "s";
-
-    }catch(e){
-
-        console.log("Text error",e);
-    }
-}
-
-/* YOUTUBE */
-let videoLoaded = false;
-
-async function loadYouTube(){
-
-    try{
-
-        if(videoLoaded) return;
-
-        const res = await fetch(API_URL);
-        const data = await res.json();
-
-        if(data.videos?.length){
-
-            const player =
-            document.getElementById("yt-player");
-
-            const playlist =
-            data.videos.join(",");
-
-            const first =
-            data.videos[0];
-
-            player.src =
-
-            `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
-
-            videoLoaded = true;
+        if (element._animation) {
+            element._animation.cancel();
         }
 
-    }catch(e){
+        /* OVERFLOW */
+        if (contentHeight > containerHeight) {
 
-        console.log("YouTube error",e);
+            const overflowAmount =
+                contentHeight - containerHeight;
+
+            element._animation =
+                element.animate(
+                    [
+                        {
+                            transform:"translateY(0px)"
+                        },
+                        {
+                            transform:
+                            `translateY(-${overflowAmount}px)`
+                        }
+                    ],
+                    {
+                        duration:25000,
+                        direction:"alternate",
+                        iterations:Infinity,
+                        easing:"ease-in-out"
+                    }
+                );
+        }
     }
-}
 
-/* START */
-clock();
+    /* ONLINE / OFFLINE */
+    window.addEventListener("offline", () => {
 
-setInterval(clock,1000);
+        document.getElementById("marquee-text").innerText =
+            "NETWORK CONNECTION LOST";
+    });
 
-refreshText();
-refreshImages();
-loadYouTube();
+    window.addEventListener("online", () => {
 
-/* AUTO REFRESH */
-setInterval(refreshText,20000);
-setInterval(refreshImages,300000);
+        fetchSynchronizedSignageData();
+    });
+
+    /* INIT */
+    clock();
+
+    setInterval(clock, 1000);
+
+    fetchSynchronizedSignageData();
+
+    /* POLLING */
+    setInterval(
+        fetchSynchronizedSignageData,
+        60000
+    );
+
+    /* AUTO REFRESH */
+    setInterval(() => {
+
+        location.reload();
+
+    }, 1000 * 60 * 60 * 6);
 
 </script>
 
