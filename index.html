@@ -38,6 +38,7 @@ body{
 /* HEADER */
 header{
     height:14vh;
+
     background:
     linear-gradient(
         90deg,
@@ -55,6 +56,21 @@ header{
 
     box-shadow:
     0 4px 15px rgba(0,0,0,0.4);
+}
+
+/* BRAND GROUP */
+.header-brand-group{
+    display:flex;
+    align-items:center;
+    gap:22px;
+    height:100%;
+}
+
+/* SCHOOL LOGO */
+.school-logo{
+    height:70%;
+    width:auto;
+    object-fit:contain;
 }
 
 /* SCHOOL TITLE */
@@ -387,11 +403,30 @@ img{
 <!-- HEADER -->
 <header>
 
+<div class="header-brand-group">
+
+<!-- GOOGLE DRIVE SCHOOL LOGO -->
+<img
+class="school-logo"
+
+src="https://drive.google.com/thumbnail?id=1ypVlwlie0XIVA7naS4gsNAVxEu4BAzq4&sz=w1000"
+
+alt="School Logo"
+/>
+
 <div class="school-name">
+
 Invictus International School<br>
-<span>Horizon Hills</span>
+
+<span>
+Horizon Hills
+</span>
+
 </div>
 
+</div>
+
+<!-- CLOCK -->
 <div class="clock-container">
 
 <div id="time">
@@ -773,4 +808,3 @@ setInterval(
 
 </body>
 </html>
-
