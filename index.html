@@ -456,9 +456,15 @@ src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBR
 <!-- RIGHT -->
 <div class="right-col">
 
-<!-- VIDEO (API TARGET CONTAINER) -->
+<!-- VIDEO -->
 <div class="card video-box">
-    <div id="yt-player"></div>
+
+<iframe
+id="yt-player"
+allow="autoplay; encrypted-media"
+allowfullscreen>
+</iframe>
+
 </div>
 
 <!-- PANELS -->
@@ -727,76 +733,47 @@ async function refreshText(){
     }
 }
 
-/* YOUTUBE IFRAME PLAYER API INTEGRATION */
-let ytPlayer;
-let videoPlaylist = [];
-let currentVideoIndex = 0;
+/* YOUTUBE */
+let videoLoaded = false;
 
-// Dynamically load YouTube API
-(function loadYouTubeAPI() {
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-})();
+async function loadYouTube(){
 
-// Fetch video IDs from Apps Script backend
-async function fetchVideoPlaylist() {
-    try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
-        if (data.videos && data.videos.length > 0) {
-            videoPlaylist = data.videos;
-            initYouTubePlayer();
+    try{
+
+        if(videoLoaded) return;
+
+        const res =
+        await fetch(API_URL);
+
+        const data =
+        await res.json();
+
+        if(data.videos?.length){
+
+            const player =
+            document.getElementById(
+                "yt-player"
+            );
+
+            const playlist =
+            data.videos.join(",");
+
+            const first =
+            data.videos[0];
+
+            player.src =
+
+            `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
+
+            videoLoaded = true;
         }
-    } catch (e) {
-        console.log("Error fetching YouTube videos:", e);
-    }
-}
 
-// Called automatically when YouTube API loads
-function onYouTubeIframeAPIReady() {
-    fetchVideoPlaylist();
-}
+    }catch(e){
 
-function initYouTubePlayer() {
-    if (!videoPlaylist.length) return;
-
-    ytPlayer = new YT.Player('yt-player', {
-        height: '100%',
-        width: '100%',
-        videoId: videoPlaylist[0],
-        playerVars: {
-            'autoplay': 1,
-            'mute': 1, // Start muted to avoid startup/playback ID errors
-            'controls': 1,
-            'rel': 0,
-            'playsinline': 1
-        },
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
-}
-
-function onPlayerReady(event) {
-    event.target.playVideo();
-    
-    // Automatically unmute shortly after start
-    setTimeout(() => {
-        event.target.unMute();
-        event.target.setVolume(100);
-    }, 1000);
-}
-
-// Advance to next video in full when finished (state = 0)
-function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.ENDED) {
-        currentVideoIndex = (currentVideoIndex + 1) % videoPlaylist.length;
-        ytPlayer.loadVideoById(videoPlaylist[currentVideoIndex]);
-        ytPlayer.unMute();
-        ytPlayer.setVolume(100);
+        console.log(
+            "YouTube error",
+            e
+        );
     }
 }
 
@@ -806,6 +783,7 @@ setInterval(clock, 1000);
 
 refreshText();
 refreshImages();
+loadYouTube();
 
 /* AUTO REFRESH */
 setInterval(refreshText, 20000);
