@@ -403,6 +403,7 @@ img{
 
 <div class="header-brand-group">
 
+<!-- GOOGLE DRIVE SCHOOL LOGO -->
 <img
 class="school-logo"
 
@@ -455,16 +456,9 @@ src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBR
 <!-- RIGHT -->
 <div class="right-col">
 
-<!-- VIDEO (API ENABLED) -->
+<!-- VIDEO (API TARGET CONTAINER) -->
 <div class="card video-box">
-
-<iframe
-id="yt-player"
-src="https://www.youtube.com/embed/?enablejsapi=1"
-allow="autoplay; encrypted-media; microphone; camera"
-allowfullscreen>
-</iframe>
-
+    <div id="yt-player"></div>
 </div>
 
 <!-- PANELS -->
@@ -738,7 +732,7 @@ let ytPlayer;
 let videoPlaylist = [];
 let currentVideoIndex = 0;
 
-// Load YouTube IFrame API script
+// Dynamically load YouTube API
 (function loadYouTubeAPI() {
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
@@ -760,6 +754,7 @@ async function fetchVideoPlaylist() {
     }
 }
 
+// Called automatically when YouTube API loads
 function onYouTubeIframeAPIReady() {
     fetchVideoPlaylist();
 }
@@ -768,38 +763,34 @@ function initYouTubePlayer() {
     if (!videoPlaylist.length) return;
 
     ytPlayer = new YT.Player('yt-player', {
+        height: '100%',
+        width: '100%',
         videoId: videoPlaylist[0],
         playerVars: {
             'autoplay': 1,
-            'mute': 0,
+            'mute': 1, // Start muted to avoid startup/playback ID errors
             'controls': 1,
             'rel': 0,
-            'origin': window.location.origin || '*'
+            'playsinline': 1
         },
         events: {
             'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange,
-            'onError': onPlayerError
+            'onStateChange': onPlayerStateChange
         }
     });
 }
 
 function onPlayerReady(event) {
     event.target.playVideo();
-    event.target.unMute();
-    event.target.setVolume(100);
+    
+    // Automatically unmute shortly after start
+    setTimeout(() => {
+        event.target.unMute();
+        event.target.setVolume(100);
+    }, 1000);
 }
 
-// Fallback: If unmuted playback fails due to browser policy, mute to keep video playing
-function onPlayerError(event) {
-    console.log("YouTube Player Error Code:", event.data);
-    if (ytPlayer && ytPlayer.mute) {
-        ytPlayer.mute();
-        ytPlayer.playVideo();
-    }
-}
-
-// Play next video on ENDED (state = 0)
+// Advance to next video in full when finished (state = 0)
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.ENDED) {
         currentVideoIndex = (currentVideoIndex + 1) % videoPlaylist.length;
