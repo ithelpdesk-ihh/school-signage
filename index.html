@@ -513,7 +513,7 @@ SECONDARY
 <div class="scroll-container">
 
 <div
-id="student-highlights"
+id="student-secondary"
 class="scroll-content">
 
 Loading...
@@ -685,11 +685,11 @@ async function refreshText(){
 
         /* SECONDARY */
         document
-        .getElementById("student-highlights")
+        .getElementById("student-secondary")
         .innerHTML =
 
-        (data.highlights ||
-        ["No highlights"])
+        (data.secondary ||
+        ["No secondary"])
 
         .map(h =>
 
