@@ -733,49 +733,46 @@ async function refreshText(){
     }
 }
 
-/* YOUTUBE */
-let videoLoaded = false;
+/* GOOGLE DRIVE VIDEO PLAYER */
+let driveVideos = [];
+let currentVideoIndex = 0;
 
-async function loadYouTube(){
+async function loadDriveVideos() {
+    try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
 
-    try{
+        if (data.driveVideos && data.driveVideos.length > 0) {
+            driveVideos = data.driveVideos;
+            const player = document.getElementById("yt-player");
 
-        if(videoLoaded) return;
+            // Play the first video
+            player.src = driveVideos[0];
 
-        const res =
-        await fetch(API_URL);
-
-        const data =
-        await res.json();
-
-        if(data.videos?.length){
-
-            const player =
-            document.getElementById(
-                "yt-player"
-            );
-
-            const playlist =
-            data.videos.join(",");
-
-            const first =
-            data.videos[0];
-
-            player.src =
-
-            `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
-
-            videoLoaded = true;
+            // If there are multiple videos, cycle through them every 60 seconds (or adjust as needed)
+            if (driveVideos.length > 1) {
+                setInterval(() => {
+                    currentVideoIndex = (currentVideoIndex + 1) % driveVideos.length;
+                    player.src = driveVideos[currentVideoIndex];
+                }, 60000); // 60,000 ms = 60 seconds per video
+            }
         }
-
-    }catch(e){
-
-        console.log(
-            "YouTube error",
-            e
-        );
+    } catch (e) {
+        console.log("Drive Video Error:", e);
     }
 }
+
+/* START */
+clock();
+setInterval(clock, 1000);
+
+refreshText();
+refreshImages();
+loadDriveVideos(); // Call Drive video function
+
+/* AUTO REFRESH */
+setInterval(refreshText, 20000);
+setInterval(refreshImages, 300000);
 
 /* START */
 clock();
