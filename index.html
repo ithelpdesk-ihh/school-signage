@@ -498,7 +498,7 @@ Loading...
 </div>
 
 <!-- SECONDARY -->
-<div class="info-panel highlights-panel">
+<div class="info-panel secondary-panel">
 
 <div class="panel-header">
 
@@ -513,7 +513,7 @@ SECONDARY
 <div class="scroll-container">
 
 <div
-id="student-Secondary"
+id="student-highlights"
 class="scroll-content">
 
 Loading...
@@ -685,11 +685,11 @@ async function refreshText(){
 
         /* SECONDARY */
         document
-        .getElementById("student-highlight")
+        .getElementById("student-highlights")
         .innerHTML =
 
         (data.highlights ||
-        ["No Updates"])
+        ["No highlights"])
 
         .map(h =>
 
