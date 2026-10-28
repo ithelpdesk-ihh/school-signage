@@ -498,7 +498,7 @@ Loading...
 </div>
 
 <!-- SECONDARY -->
-<div class="info-panel secondary-panel">
+<div class="info-panel highlights-panel">
 
 <div class="panel-header">
 
@@ -685,11 +685,11 @@ async function refreshText(){
 
         /* SECONDARY */
         document
-        .getElementById("student-Secondary")
+        .getElementById("student-highlights")
         .innerHTML =
 
-        (data.Secondary ||
-        ["No secondary"])
+        (data.highlights ||
+        ["No Highlights"])
 
         .map(h =>
 
