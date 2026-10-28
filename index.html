@@ -35,35 +35,6 @@ body{
     color:var(--white);
 }
 
-/* AUDIO UNLOCK OVERLAY */
-#audio-unlock-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(2, 6, 23, 0.85);
-    backdrop-filter: blur(8px);
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: opacity 0.5s ease;
-}
-
-#audio-unlock-overlay h1 {
-    font-size: 2.5rem;
-    color: var(--gold);
-    margin-bottom: 12px;
-}
-
-#audio-unlock-overlay p {
-    font-size: 1.2rem;
-    color: var(--white);
-}
-
 /* HEADER */
 header{
     height:14vh;
@@ -427,12 +398,6 @@ img{
 
 <body>
 
-<!-- UNLOCK AUDIO OVERLAY -->
-<div id="audio-unlock-overlay" onclick="enableSignageAudio()">
-    <h1>🔊 Tap Anywhere to Enable Sound</h1>
-    <p>Browsers require one tap to play audio on signage screens.</p>
-</div>
-
 <!-- HEADER -->
 <header>
 
@@ -496,7 +461,7 @@ src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBR
 <iframe
 id="yt-player"
 src="https://www.youtube.com/embed/?enablejsapi=1"
-allow="autoplay; encrypted-media"
+allow="autoplay; encrypted-media; microphone; camera"
 allowfullscreen>
 </iframe>
 
@@ -772,7 +737,6 @@ async function refreshText(){
 let ytPlayer;
 let videoPlaylist = [];
 let currentVideoIndex = 0;
-let isAudioEnabled = false;
 
 // Load YouTube IFrame API script
 (function loadYouTubeAPI() {
@@ -807,39 +771,30 @@ function initYouTubePlayer() {
         videoId: videoPlaylist[0],
         playerVars: {
             'autoplay': 1,
-            'mute': 0, // Unmuted
+            'mute': 0,
             'controls': 1,
             'rel': 0,
-            'modestbranding': 1
+            'origin': window.location.origin || '*'
         },
         events: {
             'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
         }
     });
 }
 
 function onPlayerReady(event) {
     event.target.playVideo();
-    if (isAudioEnabled) {
-        event.target.unMute();
-    }
+    event.target.unMute();
+    event.target.setVolume(100);
 }
 
-// User click handler to enable audio
-function enableSignageAudio() {
-    isAudioEnabled = true;
-
-    // Fade out overlay
-    const overlay = document.getElementById("audio-unlock-overlay");
-    overlay.style.opacity = "0";
-    setTimeout(() => {
-        overlay.style.display = "none";
-    }, 500);
-
-    // Unmute YouTube player
-    if (ytPlayer && ytPlayer.unMute) {
-        ytPlayer.unMute();
+// Fallback: If unmuted playback fails due to browser policy, mute to keep video playing
+function onPlayerError(event) {
+    console.log("YouTube Player Error Code:", event.data);
+    if (ytPlayer && ytPlayer.mute) {
+        ytPlayer.mute();
         ytPlayer.playVideo();
     }
 }
@@ -849,9 +804,8 @@ function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.ENDED) {
         currentVideoIndex = (currentVideoIndex + 1) % videoPlaylist.length;
         ytPlayer.loadVideoById(videoPlaylist[currentVideoIndex]);
-        if (isAudioEnabled) {
-            ytPlayer.unMute();
-        }
+        ytPlayer.unMute();
+        ytPlayer.setVolume(100);
     }
 }
 
