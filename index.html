@@ -460,8 +460,8 @@ src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBR
 <div class="card video-box">
 
 <iframe
-id="drive-player"
-allow="autoplay; fullscreen"
+id="yt-player"
+allow="autoplay; encrypted-media"
 allowfullscreen>
 </iframe>
 
@@ -661,16 +661,26 @@ async function refreshText(){
 
     try{
 
-        const res = await fetch(API_URL);
-        const data = await res.json();
+        const res =
+        await fetch(API_URL);
+
+        const data =
+        await res.json();
 
         /* PRIMARY */
         document
         .getElementById("campus-updates")
         .innerHTML =
 
-        (data.notices || ["No updates"])
-        .map(n => `<div>▶ ${n}</div>`)
+        (data.notices ||
+        ["No updates"])
+
+        .map(n =>
+
+            `<div>▶ ${n}</div>`
+
+        )
+
         .join("");
 
         /* SECONDARY */
@@ -678,18 +688,41 @@ async function refreshText(){
         .getElementById("student-highlights")
         .innerHTML =
 
-        (data.highlights || ["No highlights"])
-        .map(h => `<div>★ ${h}</div>`)
+        (data.highlights ||
+        ["No highlights"])
+
+        .map(h =>
+
+            `<div>★ ${h}</div>`
+
+        )
+
         .join("");
 
         /* BULLETIN */
-        const el = document.getElementById("marquee-text");
-        const text = data.bulletin || "Welcome to Invictus International School";
+        const el =
+        document.getElementById(
+            "marquee-text"
+        );
+
+        const text =
+
+        data.bulletin ||
+
+        "Welcome to Invictus International School";
+
         el.innerText = text;
 
         /* AUTO SPEED */
-        const speed = Math.max(15, text.length * 0.35);
-        el.style.animationDuration = speed + "s";
+        const speed =
+
+        Math.max(
+            15,
+            text.length * 0.35
+        );
+
+        el.style.animationDuration =
+        speed + "s";
 
     }catch(e){
 
@@ -700,32 +733,47 @@ async function refreshText(){
     }
 }
 
-/* GOOGLE DRIVE VIDEO PLAYER */
-let driveVideos = [];
-let currentVideoIndex = 0;
+/* YOUTUBE */
+let videoLoaded = false;
 
-async function loadDriveVideos() {
-    try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
+async function loadYouTube(){
 
-        if (data.driveVideos && data.driveVideos.length > 0) {
-            driveVideos = data.driveVideos;
-            const player = document.getElementById("drive-player");
+    try{
 
-            // Play the first video
-            player.src = driveVideos[0];
+        if(videoLoaded) return;
 
-            // Cycle through videos every 60 seconds if multiple exist
-            if (driveVideos.length > 1) {
-                setInterval(() => {
-                    currentVideoIndex = (currentVideoIndex + 1) % driveVideos.length;
-                    player.src = driveVideos[currentVideoIndex];
-                }, 60000);
-            }
+        const res =
+        await fetch(API_URL);
+
+        const data =
+        await res.json();
+
+        if(data.videos?.length){
+
+            const player =
+            document.getElementById(
+                "yt-player"
+            );
+
+            const playlist =
+            data.videos.join(",");
+
+            const first =
+            data.videos[0];
+
+            player.src =
+
+            `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
+
+            videoLoaded = true;
         }
-    } catch (e) {
-        console.log("Drive Video Error:", e);
+
+    }catch(e){
+
+        console.log(
+            "YouTube error",
+            e
+        );
     }
 }
 
@@ -735,7 +783,7 @@ setInterval(clock, 1000);
 
 refreshText();
 refreshImages();
-loadDriveVideos();
+loadYouTube();
 
 /* AUTO REFRESH */
 setInterval(refreshText, 20000);
