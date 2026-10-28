@@ -1,3 +1,87 @@
+Here is the full, updated **Google Apps Script** backend and the complete **HTML** code.
+
+### 1. Google Apps Script (`Code.gs`)
+
+Paste this entire code into your Apps Script editor.
+
+> **Crucial Step:** Make sure your video folder (`15yMV8U4BDPqUSrSDFjYd1ptkE5Vm24gV`) in Google Drive is set to **"Anyone with the link can view"**. Once saved, deploy as a **New Version** (`Deploy` > `Manage deployments` > `Pencil (Edit)` > `Version: New version` > `Deploy`).
+
+```javascript
+function doGet() {
+  const imageFolderId = "1rvvNlOI0NtfiEca5X-rPHMQMgIWgbJLt";
+  const videoFolderId = "15yMV8U4BDPqUSrSDFjYd1ptkE5Vm24gV";
+  const spreadsheetId = "1hptdrGyKiK4Ko-wzm1X7TUj0ImttIOLWHXKLwsMVCHw";
+
+  try {
+    const ss = SpreadsheetApp.openById(spreadsheetId);
+
+    // Safe sheet reader
+    const safeSheet = (name) => {
+      const sheet = ss.getSheetByName(name);
+      if (!sheet) return [];
+      return sheet.getDataRange()
+        .getValues()
+        .slice(1)
+        .flat()
+        .filter(String);
+    };
+
+    // Fetch Images
+    const imgFolder = DriveApp.getFolderById(imageFolderId);
+    const imgFiles = imgFolder.getFiles();
+    const images = [];
+
+    while (imgFiles.hasNext()) {
+      const file = imgFiles.next();
+      if (file.getMimeType().includes("image")) {
+        images.push(
+          "https://drive.google.com/thumbnail?id=" + file.getId() + "&sz=w1920"
+        );
+      }
+    }
+
+    // Fetch Videos (Using Drive Preview URL for IFRAME)
+    const vidFolder = DriveApp.getFolderById(videoFolderId);
+    const vidFiles = vidFolder.getFiles();
+    const driveVideos = [];
+
+    while (vidFiles.hasNext()) {
+      const file = vidFiles.next();
+      if (file.getMimeType().includes("video")) {
+        driveVideos.push("https://drive.google.com/file/d/" + file.getId() + "/preview");
+      }
+    }
+
+    const data = {
+      images: images,
+      notices: safeSheet("Notices"),
+      highlights: safeSheet("Highlights"),
+      bulletin: safeSheet("Bulletin").join(" • "),
+      driveVideos: driveVideos
+    };
+
+    return ContentService
+      .createTextOutput(JSON.stringify(data))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        error: err.toString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+```
+
+---
+
+### 2. Complete HTML File (`index.html`)
+
+This contains all CSS, layout markup, and cleaned-up JavaScript logic.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -461,7 +545,7 @@ src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBR
 
 <iframe
 id="drive-player"
-allow="autoplay; encrypted-media"
+allow="autoplay; fullscreen"
 allowfullscreen>
 </iframe>
 
@@ -661,26 +745,16 @@ async function refreshText(){
 
     try{
 
-        const res =
-        await fetch(API_URL);
-
-        const data =
-        await res.json();
+        const res = await fetch(API_URL);
+        const data = await res.json();
 
         /* PRIMARY */
         document
         .getElementById("campus-updates")
         .innerHTML =
 
-        (data.notices ||
-        ["No updates"])
-
-        .map(n =>
-
-            `<div>▶ ${n}</div>`
-
-        )
-
+        (data.notices || ["No updates"])
+        .map(n => `<div>▶ ${n}</div>`)
         .join("");
 
         /* SECONDARY */
@@ -688,41 +762,18 @@ async function refreshText(){
         .getElementById("student-highlights")
         .innerHTML =
 
-        (data.highlights ||
-        ["No highlights"])
-
-        .map(h =>
-
-            `<div>★ ${h}</div>`
-
-        )
-
+        (data.highlights || ["No highlights"])
+        .map(h => `<div>★ ${h}</div>`)
         .join("");
 
         /* BULLETIN */
-        const el =
-        document.getElementById(
-            "marquee-text"
-        );
-
-        const text =
-
-        data.bulletin ||
-
-        "Welcome to Invictus International School";
-
+        const el = document.getElementById("marquee-text");
+        const text = data.bulletin || "Welcome to Invictus International School";
         el.innerText = text;
 
         /* AUTO SPEED */
-        const speed =
-
-        Math.max(
-            15,
-            text.length * 0.35
-        );
-
-        el.style.animationDuration =
-        speed + "s";
+        const speed = Math.max(15, text.length * 0.35);
+        el.style.animationDuration = speed + "s";
 
     }catch(e){
 
@@ -744,17 +795,17 @@ async function loadDriveVideos() {
 
         if (data.driveVideos && data.driveVideos.length > 0) {
             driveVideos = data.driveVideos;
-            const player = document.getElementById("yt-player");
+            const player = document.getElementById("drive-player");
 
             // Play the first video
             player.src = driveVideos[0];
 
-            // If there are multiple videos, cycle through them every 60 seconds (or adjust as needed)
+            // Cycle through videos every 60 seconds if multiple exist
             if (driveVideos.length > 1) {
                 setInterval(() => {
                     currentVideoIndex = (currentVideoIndex + 1) % driveVideos.length;
                     player.src = driveVideos[currentVideoIndex];
-                }, 60000); // 60,000 ms = 60 seconds per video
+                }, 60000);
             }
         }
     } catch (e) {
@@ -762,42 +813,17 @@ async function loadDriveVideos() {
     }
 }
 
-/* START */
+/* INITIALIZATION */
 clock();
 setInterval(clock, 1000);
 
 refreshText();
 refreshImages();
-loadDriveVideos(); // Call Drive video function
+loadDriveVideos();
 
 /* AUTO REFRESH */
 setInterval(refreshText, 20000);
 setInterval(refreshImages, 300000);
-
-/* START */
-clock();
-
-setInterval(
-    clock,
-    1000
-);
-
-refreshText();
-
-refreshImages();
-
-loadYouTube();
-
-/* AUTO REFRESH */
-setInterval(
-    refreshText,
-    20000
-);
-
-setInterval(
-    refreshImages,
-    300000
-);
 
 </script>
 
