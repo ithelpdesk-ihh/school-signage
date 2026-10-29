@@ -573,7 +573,7 @@ var REFRESH_MS = 20000;      /* 20 seconds */
 var SLIDE_MS = 5000;         /* 5 seconds */
 
 /* Video zoom: 1 = exact fit, bigger = crops more of YouTube's title bar and logo */
-var VIDEO_ZOOM = 1.12;
+var VIDEO_ZOOM = 1;
 
 
 /* ============================
@@ -747,9 +747,9 @@ function updateVideos(videos){
 
     player.src =
     "https://www.youtube.com/embed/" + videos[0] +
-    "?autoplay=1&mute=0&controls=0&rel=0&loop=1" +
+    "?autoplay=1&mute=0&controls=1&rel=0&loop=1" +
     "&playlist=" + key +
-    "&modestbranding=1&iv_load_policy=3&disablekb=1&playsinline=1";
+    "&modestbranding=1&iv_load_policy=3&disablekb=0&playsinline=1";
 
     fitVideo();
 }
