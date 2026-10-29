@@ -403,7 +403,6 @@ img{
 
 <div class="header-brand-group">
 
-<!-- GOOGLE DRIVE SCHOOL LOGO -->
 <img
 class="school-logo"
 
@@ -456,15 +455,9 @@ src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBR
 <!-- RIGHT -->
 <div class="right-col">
 
-<!-- VIDEO -->
+<!-- VIDEO CONTAINER -->
 <div class="card video-box">
-
-<iframe
-id="yt-player"
-allow="autoplay; encrypted-media"
-allowfullscreen>
-</iframe>
-
+    <div id="yt-player"></div>
 </div>
 
 <!-- PANELS -->
@@ -733,47 +726,90 @@ async function refreshText(){
     }
 }
 
-/* YOUTUBE */
-let videoLoaded = false;
+/* YOUTUBE IFRAME PLAYER API INTEGRATION */
+let ytPlayer;
+let videoPlaylist = [];
+let currentVideoIndex = 0;
+let isFirstVideo = true; // Flag to track the initial video load
 
-async function loadYouTube(){
+// Load YouTube API dynamically
+(function loadYouTubeAPI() {
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+})();
 
-    try{
-
-        if(videoLoaded) return;
-
-        const res =
-        await fetch(API_URL);
-
-        const data =
-        await res.json();
-
-        if(data.videos?.length){
-
-            const player =
-            document.getElementById(
-                "yt-player"
-            );
-
-            const playlist =
-            data.videos.join(",");
-
-            const first =
-            data.videos[0];
-
-            player.src =
-
-            `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
-
-            videoLoaded = true;
+// Fetch video IDs from Apps Script backend
+async function fetchVideoPlaylist() {
+    try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        if (data.videos && data.videos.length > 0) {
+            videoPlaylist = data.videos;
+            initYouTubePlayer();
         }
+    } catch (e) {
+        console.log("Error fetching YouTube videos:", e);
+    }
+}
 
-    }catch(e){
+function onYouTubeIframeAPIReady() {
+    fetchVideoPlaylist();
+}
 
-        console.log(
-            "YouTube error",
-            e
-        );
+function initYouTubePlayer() {
+    if (!videoPlaylist.length) return;
+
+    ytPlayer = new YT.Player('yt-player', {
+        height: '100%',
+        width: '100%',
+        videoId: videoPlaylist[0],
+        playerVars: {
+            'autoplay': 1,
+            'controls': 0,
+            'rel': 0,
+            'playsinline': 1
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    event.target.unMute();
+    event.target.setVolume(100);
+    
+    const playPromise = event.target.playVideo();
+
+    if (playPromise !== undefined) {
+        playPromise.catch(() => {
+            console.log("Audio blocked on boot. Falling back to muted autoplay.");
+            event.target.mute();
+            event.target.playVideo();
+        });
+    }
+}
+
+function onPlayerStateChange(event) {
+    // YT.PlayerState.PLAYING equals 1
+    if (event.data === YT.PlayerState.PLAYING) {
+        // Skip ONLY the first video on startup
+        if (isFirstVideo) {
+            isFirstVideo = false; // Turn off flag so all subsequent videos play completely
+            currentVideoIndex = (currentVideoIndex + 1) % videoPlaylist.length;
+            ytPlayer.loadVideoById(videoPlaylist[currentVideoIndex]);
+            return;
+        }
+    }
+
+    // Standard playlist behavior: play subsequent videos completely until ENDED
+    if (event.data === YT.PlayerState.ENDED) {
+        currentVideoIndex = (currentVideoIndex + 1) % videoPlaylist.length;
+        ytPlayer.loadVideoById(videoPlaylist[currentVideoIndex]);
+        ytPlayer.playVideo();
     }
 }
 
@@ -783,7 +819,6 @@ setInterval(clock, 1000);
 
 refreshText();
 refreshImages();
-loadYouTube();
 
 /* AUTO REFRESH */
 setInterval(refreshText, 20000);
