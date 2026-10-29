@@ -149,6 +149,7 @@ main{
 /* VIDEO */
 .video-box{
     flex:2.2;
+    position:relative;
     background:#000;
     border:2px solid rgba(255,255,255,0.08);
 }
@@ -356,20 +357,25 @@ main{
 }
 
 /* MEDIA */
+
+/* VIDEO: sized by JavaScript (fitVideo) so it fills the box with no black bars */
 iframe{
-    width:100%;
-    height:100%;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
     border:none;
+    pointer-events:none;
 }
 
-img{
+/* POSTER: "cover" fills the whole box, cropping edges if needed */
+#slideshow{
+    position:absolute;
+    inset:0;
     width:100%;
     height:100%;
-
-    object-fit:contain;
-
+    object-fit:cover;
     border:none;
-
     transition:opacity 0.8s ease;
 }
 
@@ -447,7 +453,7 @@ LOADING...
 
 <img
 id="slideshow"
-
+alt=""
 src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
 />
 
@@ -553,241 +559,238 @@ Loading...
 
 <script>
 
-/* API */
-const API_URL =
+/* ============================
+   SETTINGS (easy to change)
+   ============================ */
+
+/* Your Apps Script web app link */
+var API_URL =
 "https://script.google.com/macros/s/AKfycbyhWqhhzjiNfNCLPSPmltgmNH4jkIXJ6PvMfLZtkG079rzBNiYWHhowQrWQeIOweedC/exec";
 
-/* CLOCK */
+/* How often to check for new content (milliseconds) */
+var REFRESH_MS = 20000;      /* 20 seconds */
+
+/* Seconds each poster is shown */
+var SLIDE_MS = 5000;         /* 5 seconds */
+
+/* Video zoom: 1 = exact fit, bigger = crops more of YouTube's title bar and logo */
+var VIDEO_ZOOM = 1.12;
+
+
+/* ============================
+   HELPERS
+   ============================ */
+
+/* Stops special characters in the sheet from breaking the page */
+function esc(s){
+    return String(s)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;");
+}
+
+
+/* ============================
+   CLOCK
+   ============================ */
 function clock(){
 
-    const now = new Date();
+    var now = new Date();
 
     document.getElementById("time").innerText =
-
     now.toLocaleTimeString([],{
-
         hour:"2-digit",
         minute:"2-digit"
-
     });
 
     document.getElementById("date").innerText =
-
     now.toLocaleDateString([],{
-
         weekday:"long",
         year:"numeric",
         month:"long",
         day:"numeric"
-
     });
 }
 
-/* IMAGE SYSTEM */
-let slideshowInterval;
 
-async function refreshImages(){
+/* ============================
+   VIDEO FILL (no black bars)
+   ============================ */
+function fitVideo(){
 
-    try{
+    var box    = document.querySelector(".video-box");
+    var player = document.getElementById("yt-player");
 
-        const res =
-        await fetch(API_URL);
+    /* Video is 16:9. Scale it up until it covers the whole box. */
+    var scale = Math.max(
+        box.clientWidth  / 16,
+        box.clientHeight / 9
+    ) * VIDEO_ZOOM;
 
-        const data =
-        await res.json();
-
-        if(data.images?.length){
-
-            const img =
-            document.getElementById("slideshow");
-
-            /* PRELOAD */
-            data.images.forEach(src=>{
-
-                const preload =
-                new Image();
-
-                preload.src = src;
-
-            });
-
-            let i = 0;
-
-            img.src =
-            data.images[0];
-
-            clearInterval(slideshowInterval);
-
-            slideshowInterval = setInterval(()=>{
-
-                i =
-                (i + 1) %
-                data.images.length;
-
-                /* FADE OUT */
-                img.style.opacity = 0;
-
-                setTimeout(()=>{
-
-                    img.src =
-                    data.images[i];
-
-                    /* FADE IN */
-                    img.style.opacity = 1;
-
-                },400);
-
-            },5000);
-
-            /* FALLBACK */
-            img.onerror = ()=>{
-
-                img.src =
-                "https://via.placeholder.com/1920x1080?text=Invictus+Signage";
-            };
-        }
-
-    }catch(e){
-
-        console.log(
-            "Image error",
-            e
-        );
-    }
+    player.style.width  = (scale * 16) + "px";
+    player.style.height = (scale * 9)  + "px";
 }
 
-/* TEXT */
-async function refreshText(){
 
-    try{
+/* ============================
+   POSTER SLIDESHOW
+   ============================ */
+var slideshowInterval = null;
+var currentImages = "";      /* remembers the list so we only restart if it changed */
 
-        const res =
-        await fetch(API_URL);
+function updateImages(images){
 
-        const data =
-        await res.json();
+    if(!images || !images.length) return;
 
-        /* PRIMARY */
-        document
-        .getElementById("campus-updates")
-        .innerHTML =
+    var key = images.join("|");
+    if(key === currentImages) return;     /* nothing changed, keep playing */
+    currentImages = key;
 
-        (data.notices ||
-        ["No updates"])
+    var img = document.getElementById("slideshow");
+    var i = 0;
 
-        .map(n =>
+    /* Preload so changes are smooth */
+    images.forEach(function(src){
+        var p = new Image();
+        p.src = src;
+    });
 
-            `<div>▶ ${n}</div>`
+    /* If a picture fails to load, skip to the next one */
+    img.onerror = function(){
+        if(images.length > 1){
+            i = (i + 1) % images.length;
+            img.src = images[i];
+        }
+    };
 
-        )
+    img.style.opacity = 1;
+    img.src = images[0];
 
-        .join("");
+    clearInterval(slideshowInterval);
 
-        /* SECONDARY */
-        document
-        .getElementById("student-highlights")
-        .innerHTML =
+    slideshowInterval = setInterval(function(){
 
-        (data.highlights ||
-        ["No highlights"])
+        i = (i + 1) % images.length;
 
-        .map(h =>
+        /* FADE OUT */
+        img.style.opacity = 0;
 
-            `<div>★ ${h}</div>`
+        setTimeout(function(){
+            img.src = images[i];
+            /* FADE IN */
+            img.style.opacity = 1;
+        }, 400);
 
-        )
+    }, SLIDE_MS);
+}
 
-        .join("");
 
-        /* BULLETIN */
-        const el =
-        document.getElementById(
-            "marquee-text"
-        );
+/* ============================
+   TEXT PANELS + BULLETIN
+   ============================ */
+function updateText(data){
 
-        const text =
+    /* PRIMARY */
+    var notices =
+    (data.notices && data.notices.length)
+    ? data.notices
+    : ["No updates"];
 
-        data.bulletin ||
+    document.getElementById("campus-updates").innerHTML =
+    notices.map(function(n){
+        return "<div>▶ " + esc(n) + "</div>";
+    }).join("");
 
-        "Welcome to Invictus International School";
+    /* SECONDARY */
+    var highlights =
+    (data.highlights && data.highlights.length)
+    ? data.highlights
+    : ["No highlights"];
+
+    document.getElementById("student-highlights").innerHTML =
+    highlights.map(function(h){
+        return "<div>★ " + esc(h) + "</div>";
+    }).join("");
+
+    /* BULLETIN */
+    var el = document.getElementById("marquee-text");
+
+    var text =
+    data.bulletin ||
+    "Welcome to Invictus International School";
+
+    /* Only touch the ticker if the text changed, so it doesn't jump */
+    if(el.innerText !== text){
 
         el.innerText = text;
 
-        /* AUTO SPEED */
-        const speed =
-
-        Math.max(
-            15,
-            text.length * 0.35
-        );
-
-        el.style.animationDuration =
-        speed + "s";
-
-    }catch(e){
-
-        console.log(
-            "Text error",
-            e
-        );
+        /* Auto speed: longer text scrolls for longer */
+        var speed = Math.max(15, text.length * 0.35);
+        el.style.animationDuration = speed + "s";
     }
 }
 
-/* YOUTUBE */
-let videoLoaded = false;
 
-async function loadYouTube(){
+/* ============================
+   YOUTUBE
+   ============================ */
+var currentVideos = "";
 
-    try{
+function updateVideos(videos){
 
-        if(videoLoaded) return;
+    if(!videos || !videos.length) return;
 
-        const res =
-        await fetch(API_URL);
+    var key = videos.join(",");
+    if(key === currentVideos) return;     /* same list, don't reload the video */
+    currentVideos = key;
 
-        const data =
-        await res.json();
+    var player = document.getElementById("yt-player");
 
-        if(data.videos?.length){
+    player.src =
+    "https://www.youtube.com/embed/" + videos[0] +
+    "?autoplay=1&mute=1&controls=0&rel=0&loop=1" +
+    "&playlist=" + key +
+    "&modestbranding=1&iv_load_policy=3&disablekb=1&playsinline=1";
 
-            const player =
-            document.getElementById(
-                "yt-player"
-            );
+    fitVideo();
+}
 
-            const playlist =
-            data.videos.join(",");
 
-            const first =
-            data.videos[0];
+/* ============================
+   LOAD EVERYTHING (one request)
+   ============================ */
+function loadData(){
 
-            player.src =
+    fetch(API_URL)
+    .then(function(res){ return res.json(); })
+    .then(function(data){
 
-            `https://www.youtube.com/embed/${first}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${playlist}`;
-
-            videoLoaded = true;
+        if(data.error){
+            console.log("Script error:", data.error);
+            return;
         }
 
-    }catch(e){
-
-        console.log(
-            "YouTube error",
-            e
-        );
-    }
+        updateText(data);
+        updateImages(data.images);
+        updateVideos(data.videos);
+    })
+    .catch(function(e){
+        console.log("Load error", e);
+    });
 }
 
-/* INITIALIZATION */
+
+/* ============================
+   START
+   ============================ */
 clock();
 setInterval(clock, 1000);
 
-refreshText();
-refreshImages();
-loadYouTube();
+fitVideo();
+window.addEventListener("resize", fitVideo);
 
-/* AUTO REFRESH */
-setInterval(refreshText, 20000);
-setInterval(refreshImages, 300000);
+loadData();
+setInterval(loadData, REFRESH_MS);
 
 </script>
 
