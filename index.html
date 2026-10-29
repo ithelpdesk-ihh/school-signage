@@ -365,6 +365,52 @@ iframe{
     left:50%;
     transform:translate(-50%,-50%);
     border:none;
+    pointer-events:none;
+}
+
+/* CUSTOM VIDEO BUTTONS (only visible on hover) */
+.video-controls{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:5;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:18px;
+
+    padding:30px 0 14px;
+
+    background:linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+
+    opacity:0;
+    transition:opacity 0.3s ease;
+}
+
+.video-box:hover .video-controls{
+    opacity:1;
+}
+
+.video-controls button{
+    width:48px;
+    height:48px;
+
+    border:none;
+    border-radius:50%;
+
+    background:rgba(255,255,255,0.18);
+    color:#fff;
+    font-size:20px;
+    cursor:pointer;
+
+    backdrop-filter:blur(4px);
+}
+
+.video-controls button:hover{
+    background:var(--gold);
+    color:#000;
 }
 
 /* POSTER: "cover" fills the whole box, cropping edges if needed */
@@ -470,6 +516,13 @@ allow="autoplay; encrypted-media"
 allowfullscreen>
 </iframe>
 
+<div class="video-controls">
+    <button id="vc-prev" title="Previous">⏮</button>
+    <button id="vc-play" title="Play / Pause">⏸</button>
+    <button id="vc-next" title="Next">⏭</button>
+    <button id="vc-mute" title="Mute / Unmute">🔇</button>
+</div>
+
 </div>
 
 <!-- PANELS -->
@@ -573,7 +626,10 @@ var REFRESH_MS = 20000;      /* 20 seconds */
 var SLIDE_MS = 5000;         /* 5 seconds */
 
 /* Video zoom: 1 = exact fit, bigger = crops more of YouTube's title bar and logo */
-var VIDEO_ZOOM = 1;
+var VIDEO_ZOOM = 1.12;
+
+/* true = try to turn the sound on automatically after the video starts */
+var AUTO_UNMUTE = true;
 
 
 /* ============================
@@ -747,12 +803,110 @@ function updateVideos(videos){
 
     player.src =
     "https://www.youtube.com/embed/" + videos[0] +
-    "?autoplay=1&mute=0&controls=1&rel=0&loop=1" +
+    "?autoplay=1&mute=1&controls=0&rel=0&loop=1&enablejsapi=1" +
     "&playlist=" + key +
-    "&modestbranding=1&iv_load_policy=3&disablekb=0&playsinline=1";
+    "&modestbranding=1&iv_load_policy=3&disablekb=1&playsinline=1";
 
     fitVideo();
 }
+
+
+/* ============================
+   CUSTOM VIDEO BUTTONS
+   ============================ */
+var ytPlaying = true;
+var ytMuted = true;
+
+function ytCmd(func, args){
+
+    var p = document.getElementById("yt-player");
+
+    if(p.contentWindow){
+        p.contentWindow.postMessage(
+            JSON.stringify({
+                event:"command",
+                func:func,
+                args:args || []
+            }),
+            "*"
+        );
+    }
+}
+
+function refreshButtons(){
+    document.getElementById("vc-play").innerText = ytPlaying ? "⏸" : "▶";
+    document.getElementById("vc-mute").innerText = ytMuted   ? "🔇" : "🔊";
+}
+
+document.getElementById("vc-play").onclick = function(){
+    ytCmd(ytPlaying ? "pauseVideo" : "playVideo");
+    ytPlaying = !ytPlaying;
+    refreshButtons();
+};
+
+document.getElementById("vc-prev").onclick = function(){
+    ytCmd("previousVideo");
+};
+
+document.getElementById("vc-next").onclick = function(){
+    ytCmd("nextVideo");
+};
+
+document.getElementById("vc-mute").onclick = function(){
+    ytCmd(ytMuted ? "unMute" : "mute");
+
+    if(ytMuted){
+        ytCmd("setVolume", [100]);
+    }
+
+    ytMuted = !ytMuted;
+    refreshButtons();
+};
+
+/* When the video frame loads: start listening to YouTube, then try to unmute */
+document.getElementById("yt-player").addEventListener("load", function(){
+
+    var p = this;
+
+    p.contentWindow.postMessage(
+        JSON.stringify({event:"listening", id:1, channel:"widget"}),
+        "*"
+    );
+
+    if(AUTO_UNMUTE){
+        setTimeout(function(){
+            ytCmd("unMute");
+            ytCmd("setVolume", [100]);
+        }, 1500);
+    }
+});
+
+/* YouTube reports its state back so the buttons always show the truth */
+window.addEventListener("message", function(e){
+
+    if(e.origin.indexOf("youtube.com") === -1) return;
+
+    var d;
+
+    try{
+        d = JSON.parse(e.data);
+    }catch(err){
+        return;
+    }
+
+    if(d && d.info){
+
+        if(typeof d.info.playerState !== "undefined"){
+            ytPlaying = (d.info.playerState === 1);
+        }
+
+        if(typeof d.info.muted !== "undefined"){
+            ytMuted = d.info.muted;
+        }
+
+        refreshButtons();
+    }
+});
 
 
 /* ============================
